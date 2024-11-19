@@ -54,8 +54,11 @@
 </details>
 
 ## Notes
+### State Variables 
+<!-- 
 
-- Hier kommen Notizen rein
+-->
+- clientServerStateIndex: Client = 0, Server = 1
 
 ## To-Dos
 
