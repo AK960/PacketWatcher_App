@@ -58,7 +58,9 @@
 <!-- 
 
 -->
-- clientServerStateIndex: Client = 0, Server = 1
+- clientServerStateIndex changes Scaffold-Content based on selected Tab: Client = 0, Server = 1
+- selectedProtocolStateIndex changes selected protocol type in segmentedControl. With clicking button,
+onOptionSelected is called with the value of the clicked button 
 
 ## To-Dos
 
