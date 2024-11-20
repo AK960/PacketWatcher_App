@@ -55,74 +55,12 @@
 
 ## Notes
 ### State Variables
-- clientServerStateIndex: changes Tab-View based on index, Client = 0, Server = 1
+- clientServerStateIndex:     changes Tab-View based on index, Client = 0, Server = 1
 - selectedProtocolStateIndex: changes used protocol based on index
-+ 
 
-### Function Logic
-Lambda Functions:
-- Syntax: 
-  ```sh
-  # overall: Gets two values and returns one
-  val operarion: (Type, Type) -> ReturnType = { param1, param2 -> someLogic }
-  # Lambda expression in general 
-  { param1: Type, param2: Type -> return value }
-  ```
-  - "->" separates parameters from instructions
-  - "Unit" is empty return value, like void
-  - Allows to pass a user defined function that takes a string as input but returns nothing
-  - Function can be passed to manipulate the behavior of the higher order function
-- Notation:
-  - The marker "->" can be inside the brackets or outside the function signature and has different meanings:
-    ```sh
-    # Within: Indicates that this is a Lambda-Function that gets input values and return an output value
-    # Outside: The "->" marks the beginning of the return of the Lambda-Expression
-    val add: (Int, Int) -> Int = { a, b -> a + b }
-    ```
-- Lambda functions can be passed to higher order functions as argument
-- like:
-    ```sh
-    fun function (onProtocolSelected: (String) -> Unit) { some logic without returnValue }
-    ```
-  - To call the function: 
-    ```sh
-    onProtocolSelected { var = "someString" } 
-    onProtocolSelected { var = it }
-    ```
-  - If a function only has one parameter it can be referenced by "it"
-- If the Lambda-Function is the last argument of a function, the {} can be outside the argument block
-    ```sh
-    listOf(1, 2, 3).forEach { println(it) }
-    # instead of
-    val list = listOf(1, 2, 3)
-    list.forEach(fun(item: int) {
-      println(item)
-    }) 
-    ```
-- The Lambda-Function can have default parameters
-    ```sh
-    val greet: (String) -> Unit = { name -> println("Hello, $name!") }
-    greet("Max")
-    ```
-- To compare with a common function:
-    ```sh
-    # Normal
-    fun add(a: Int, b: Int): Int {
-      return a + b
-    }
-    # Lambda
-    val add = { a: Int, b: Int -> a + b }
-    ```
-    - Lambdas do not have names and can be passed as values
-- Lambda-Functions returns the value of the last expression, if there is more than "Unit" defined. In example with the Scaffold() function:
-    ```sh
-    Scaffold(...) { innerPadding -> # innerPadding is a parameter and thus must be specified
-      Column (modifier = Modifier.padding(innerPadding)) {...} 
-    ``` 
-
-
-PacketWatcherClientView: 
-+ SegmentedControl Logic`
+### Functions
+#### PacketWatcherClientView: 
++ SegmentedControl Logic
   - onProtocolSelected: (String) -> Unit
     - onProtocolSelected --> Name of the parameter, represents a function that is called later
     - (String) --> String is passed to the Lambda-Function, which contains selected protocol
@@ -136,7 +74,68 @@ PacketWatcherClientView:
     - SegmentedControl expects Lambda-Function as argument for onOptionSelected
     - The onClick-function in SegmentedControl calls the lambda function on the current option
     - Thus, the value from selectedProtocolStateIndex is updated to "UDP" when interaction with the UDP button
-+  
+
+### Theory Notes
+Lambda Functions:
+- Syntax: 
+```sh
+# overall: Gets two values and returns one
+val operarion: (Type, Type) -> ReturnType = { param1, param2 -> someLogic }
+# Lambda expression in general 
+{ param1: Type, param2: Type -> return value }
+```
+  - "->" separates parameters from instructions
+  - "Unit" is empty return value, like void
+  - Allows to pass a user defined function that takes a string as input but returns nothing
+  - Function can be passed to manipulate the behavior of the higher order function
+  - The marker "->" can be inside the brackets or outside the function signature and has different meanings:
+```sh
+# Within: Indicates that this is a Lambda-Function that gets input values and return an output value
+# Outside: The "->" marks the beginning of the return of the Lambda-Expression
+val add: (Int, Int) -> Int = { a, b -> a + b }
+```
+- Notation:
+  - Lambda functions can be passed to higher order functions as argument, like:
+```sh
+fun function (onProtocolSelected: (String) -> Unit) { some logic without returnValue }
+```
+- 
+  - To call the function: 
+  - If a function only has one parameter it can be referenced by "it"
+```sh
+onProtocolSelected { var = "someString" } 
+onProtocolSelected { var = it }
+```
+  - If the Lambda-Function is the last argument of a function, the {} can be outside the argument block
+```sh
+listOf(1, 2, 3).forEach { println(it) }
+# instead of
+val list = listOf(1, 2, 3)
+list.forEach(fun(item: int) {
+  println(item)
+}) 
+```
+  - The Lambda-Function can have default parameters
+```sh
+val greet: (String) -> Unit = { name -> println("Hello, $name!") }
+greet("Max")
+```
+  - To compare with a common function:
+```sh
+# Normal
+fun add(a: Int, b: Int): Int {
+  return a + b
+}
+# Lambda
+val add = { a: Int, b: Int -> a + b }
+```
+   - Lambdas do not have names and can be passed as values
+   - Lambda-Functions returns the value of the last expression, if there is more than "Unit" defined. In example with the Scaffold() function:
+```sh
+Scaffold(...) { innerPadding -> # innerPadding is a parameter and thus must be specified
+  Column (modifier = Modifier.padding(innerPadding)) {...} 
+``` 
+
 
 ## To-Dos
 

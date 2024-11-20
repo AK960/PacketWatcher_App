@@ -141,7 +141,7 @@ fun PacketWatcherAppScaffold () {
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 // If bottomBar Index set to Client, run functions that render client view, else server view
-                if (clientServerStateIndex == 0) {
+                if (clientServerStateIndex != 0) {
                     PacketWatcherClientView(
                         selectedProtocolStateIndex, // Start-Index for SegmentedControl set to TCP
                         onProtocolSelected = { selectedProtocolStateIndex = it }
