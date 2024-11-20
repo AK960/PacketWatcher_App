@@ -155,8 +155,10 @@ Scaffold(...) { innerPadding -> # innerPadding is a parameter and thus must be s
 
 <!-- CONTACT -->
 ## Contact
-Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
-Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
+Alexander Kleinwächter 
+[@email_handle]a.kleinwaechter97@gmail.com
+[@twitter_handle](https://twitter.com/@a_kleini97) 
+(https://github.com/github_username/repo_name)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
