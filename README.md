@@ -59,7 +59,7 @@
 - selectedProtocolStateIndex: changes used protocol based on index
 
 ### Functions
-#### PacketWatcherClientView: 
+#### PacketWatcherClientView 
 + SegmentedControl Logic
   - onProtocolSelected: (String) -> Unit
     - onProtocolSelected --> Name of the parameter, represents a function that is called later
@@ -76,8 +76,8 @@
     - Thus, the value from selectedProtocolStateIndex is updated to "UDP" when interaction with the UDP button
 
 ### Theory Notes
-Lambda Functions:
-- Syntax: 
+#### Lambda Functions
+Syntax: 
 ```sh
 # overall: Gets two values and returns one
 val operarion: (Type, Type) -> ReturnType = { param1, param2 -> someLogic }
@@ -94,12 +94,11 @@ val operarion: (Type, Type) -> ReturnType = { param1, param2 -> someLogic }
 # Outside: The "->" marks the beginning of the return of the Lambda-Expression
 val add: (Int, Int) -> Int = { a, b -> a + b }
 ```
-- Notation:
+Notation:
   - Lambda functions can be passed to higher order functions as argument, like:
 ```sh
 fun function (onProtocolSelected: (String) -> Unit) { some logic without returnValue }
 ```
-- 
   - To call the function: 
   - If a function only has one parameter it can be referenced by "it"
 ```sh
@@ -120,7 +119,7 @@ list.forEach(fun(item: int) {
 val greet: (String) -> Unit = { name -> println("Hello, $name!") }
 greet("Max")
 ```
-  - To compare with a common function:
+  - To compare with a common function
 ```sh
 # Normal
 fun add(a: Int, b: Int): Int {
@@ -134,8 +133,7 @@ val add = { a: Int, b: Int -> a + b }
 ```sh
 Scaffold(...) { innerPadding -> # innerPadding is a parameter and thus must be specified
   Column (modifier = Modifier.padding(innerPadding)) {...} 
-``` 
-
+```
 
 ## To-Dos
 
@@ -158,7 +156,7 @@ Scaffold(...) { innerPadding -> # innerPadding is a parameter and thus must be s
 <div>
   <p>Alexander Kleinwächter</p> 
   [@email]<p><a href="a.kleinwaechter97@gmail.com">E-Mail</a></p>
-  [@linkedIn]<p><a href="https://www.linkedin.com/in/alexander-kleinw%C3%A4chter-42606428b/"></a></p>
+  [@linkedIn]<p><a href="https://www.linkedin.com/in/alexander-kleinw%C3%A4chter-42606428b/">LindedIn</a></p>
   [@twitter]<p><a href="https://twitter.com/@a_kleini97">Twitter</a></p>
   [@project-repo]<p><a href="https://github.com/github_username/repo_name">Project Repo</a></p>
 </div>
