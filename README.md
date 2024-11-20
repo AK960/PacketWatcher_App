@@ -46,7 +46,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li><a href="#notes">Notes</a></li>
-    <li><a href="#todo">To-Dos</a></li>
+    <li><a href="#to-dos">To-Dos</a></li>
     <li><a href="#bugs">Bugs</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
   </ol>
