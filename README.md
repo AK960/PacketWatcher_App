@@ -54,13 +54,28 @@
 </details>
 
 ## Notes
-### State Variables 
-<!-- 
+### State Variables
+- clientServerStateIndex: changes Tab-View based on index, Client = 0, Server = 1
+- selectedProtocolStateIndex: changes used protocol based on index
++ 
 
--->
-- clientServerStateIndex changes Scaffold-Content based on selected Tab: Client = 0, Server = 1
-- selectedProtocolStateIndex changes selected protocol type in segmentedControl. With clicking button,
-onOptionSelected is called with the value of the clicked button 
+### Function Logic
+PacketWatcherClientView: 
++ SegmentedControl Logic
+  - onProtocolSelected: (String) -> Unit
+    - onProtocolSelected --> Name of the parameter, represents a function that is called later
+    - (String) --> String is passed to the Lambda-Function, which contains selected protocol
+      - Variable selectedProtocolStateIndex = it (it from if-statement) is passed ("TCP" or "UDP")
+    - Unit --> Function does not return a value (synonym to void)
+  - Function expects Lambda-Function as argument that passes some behavior/logic to the function
+    - This is the term { selectedProtocolStateIndex = it }
+      - it is the sole parameter of the function
+    - Makes the function flexible: The logic for the selection of the protocol does not need to be defined but is rather passed to the code by the calling code
+  - Function calls the function SegmentedControl and passes the Lambda-Function as parameter
+    - SegmentedControl expects Lambda-Function as argument for onOptionSelected
+    - The onClick-function in SegmentedControl calls the lambda function on the current option
+    - Thus, the value from selectedProtocolStateIndex is updated to "UDP" when interaction with the UDP button
++  
 
 ## To-Dos
 
@@ -69,7 +84,6 @@ onOptionSelected is called with the value of the clicked button
 ## Bugs
 
 - Hier kommen Bugs rein
-
 ## Roadmap
 
 - [ ] Feature 1
