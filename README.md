@@ -27,7 +27,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/AK960/PacketWatcher_App">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="app/src/main/res/drawable/logo.webp" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center">KTR - Mobile Communication - Packet Watcher App</h3>
