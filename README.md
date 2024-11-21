@@ -54,15 +54,15 @@
 </details>
 
 ## Notes
-### States
-| Variable Name                | Description                                                       | Description                            |
-|------------------------------|-------------------------------------------------------------------|----------------------------------------|
-| `clientServerStateIndex`     | Client = 0, Server = 1                                            | Switching Tabs Client/ServerView       |
-| `selectedProtocolStateIndex` | TCP or UDP                                                        | Selecting Protocol in SegmentedControl |
-| `ipAddress`                  | Choosing IP Address to transmit to                                |                                        |
-| `portNumber`                 | Choosing connection endpoint                                      |                                        |
-| `tcpMessage`                 | Specifying message to transmit                                    |                                        |
-| `protocol`                   | Choosing transmission type, takes over selectedProtocolStateIndex |                                        |
+### States and important Variables
+| Variable Name                | Description                                                       | Description                                      |
+|------------------------------|-------------------------------------------------------------------|--------------------------------------------------|
+| `clientServerStateIndex`     | Client = 0, Server = 1                                            | Switching Tabs Client/ServerView                 |
+| `selectedProtocolStateIndex` | TCP or UDP                                                        | Selecting Protocol in SegmentedControl           |
+| `ipAddress`                  | Choosing IP Address to transmit to                                | Passing TextField input to transmission function |
+| `portNumber`                 | Choosing connection endpoint                                      | Passing TextField input to transmission function |
+| `tcpMessage`                 | Specifying message to transmit                                    | Passing TextField input to transmission function |
+| `protocol`                   | Choosing transmission type, takes over selectedProtocolStateIndex | Passing TextField input to transmission function |
 
 ### Functions
 #### Choosing Transmission Type
