@@ -34,6 +34,9 @@ fun SegmentedControl(
                 shape = RoundedCornerShape(0.dp),
                 modifier = Modifier.weight(1f),
                 onClick = { onOptionSelected(option) }
+                    // executes { selectedProtocolStateIndex = it } and thus sets the
+                    // state to the option (protocol) that is clicked upon
+                    // --> recomposition of SegmentedControl
             ) {
                 Text(option)
             }
@@ -47,8 +50,8 @@ fun InputFields(
     onIpAddressChange: (String) -> Unit,
     portNumber: String,
     onPortNumberChange: (String) -> Unit,
-    payload: String,
-    onPayloadChange: (String) -> Unit
+    tcpMessage: String,
+    onTcpMessageChange: (String) -> Unit
 ) {
     Column {
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -73,8 +76,8 @@ fun InputFields(
     Column {
         Row (modifier = Modifier.fillMaxWidth()) {
             TextField(
-                value = payload,
-                onValueChange = onPayloadChange,
+                value = tcpMessage,
+                onValueChange = onTcpMessageChange,
                 label = { Text("Payload") },
                 modifier = Modifier
                     .weight(1f)
@@ -86,7 +89,9 @@ fun InputFields(
 
 @Composable
 fun SendButton(onClick: () -> Unit) {
-    Button(onClick = onClick, modifier = Modifier
+    Button(
+        onClick = onClick,
+        modifier = Modifier
         .fillMaxWidth()
         .height(48.dp)
     ) {

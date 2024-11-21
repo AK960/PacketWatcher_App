@@ -55,15 +55,17 @@
 
 ## Notes
 ### States
-| Variable Name            | UseCase                    | Description                            |
-|--------------------------|----------------------------|----------------------------------------|
-| `clientServerStateIndex` | Switching Tabs             | Client = 0, Server = 1                 |
-| `stateVar2`              | Selecting Protocol to send | TCP or UDP                             |
-| `stateVar3`              |                            |                                        |
+| Variable Name                | Description                                                       | Description                            |
+|------------------------------|-------------------------------------------------------------------|----------------------------------------|
+| `clientServerStateIndex`     | Client = 0, Server = 1                                            | Switching Tabs Client/ServerView       |
+| `selectedProtocolStateIndex` | TCP or UDP                                                        | Selecting Protocol in SegmentedControl |
+| `ipAddress`                  | Choosing IP Address to transmit to                                |                                        |
+| `portNumber`                 | Choosing connection endpoint                                      |                                        |
+| `tcpMessage`                 | Specifying message to transmit                                    |                                        |
+| `protocol`                   | Choosing transmission type, takes over selectedProtocolStateIndex |                                        |
 
 ### Functions
-#### PacketWatcherClientView 
-+ SegmentedControl Logic
+#### Choosing Transmission Type
   - onProtocolSelected: (String) -> Unit
     - onProtocolSelected --> Name of the parameter, represents a function that is called later
     - (String) --> String is passed to the Lambda-Function, which contains selected protocol
@@ -77,6 +79,7 @@
     - SegmentedControl expects Lambda-Function as argument for onOptionSelected
     - The onClick-function in SegmentedControl calls the lambda function on the current option
     - Thus, the value from selectedProtocolStateIndex is updated to "UDP" when interaction with the UDP button
+#### 
 
 ## To-Dos
 Server View:
