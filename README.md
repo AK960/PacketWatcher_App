@@ -54,9 +54,12 @@
 </details>
 
 ## Notes
-### State Variables
-- clientServerStateIndex:     changes Tab-View based on index, Client = 0, Server = 1
-- selectedProtocolStateIndex: changes used protocol based on index
+### States
+| Variable Name            | UseCase                    | Description            |
+|--------------------------|----------------------------|------------------------|
+| `clientServerStateIndex` | Switching Tabs             | Client = 0, Server = 1 |
+| `stateVar2`              | Selecting Protocol to send | Values: {"TCP", "UDP"} |
+| `stateVar3`              |                            |                        |
 
 ### Functions
 #### PacketWatcherClientView 
@@ -74,6 +77,21 @@
     - SegmentedControl expects Lambda-Function as argument for onOptionSelected
     - The onClick-function in SegmentedControl calls the lambda function on the current option
     - Thus, the value from selectedProtocolStateIndex is updated to "UDP" when interaction with the UDP button
+
+## To-Dos
+Server View:
+- Change button content if server is running (state variable)
+
+## Bugs
+- Hier kommen Bugs rein
+
+## Roadmap
+- [ ] Feature 1
+- [ ] Feature 2
+- [ ] Feature 3
+  - [ ] Nested Feature
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Theory Notes
 ### Lambda Functions
@@ -136,6 +154,8 @@ fun add(a: Int, b: Int): Int {
 # Lambda
 val add = { a: Int, b: Int -> a + b }
 ```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 ### States
 Intro: Compose apps transform data into UI by calling composable functions. If the data 
 changes, Compose re-executes the functions with the new data, creating an updated UI 
@@ -206,26 +226,14 @@ fun OnboardingScreen(
     }
 }
 ```
-
-### ViewModels
-
-## To-Dos
-Server View:
-- Change button content if server is running (state variable)
-
-## Bugs
-
-- Hier kommen Bugs rein
-## Roadmap
-
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-    - [ ] Nested Feature
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-<!-- CONTACT -->
+### ViewModels
+ViewModel is a class that exposes the state of the user interface and encapsulates the associated
+logic. Its principal advantage is that it caches state and persists it through configuration changes. 
+This means that your UI does not have to fetch data again when navigating between activities.
+
+
 ## Contact
 <div>
   <p>Alexander Kleinwächter</p> 
