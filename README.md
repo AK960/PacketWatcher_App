@@ -65,7 +65,7 @@
 | `protocol`                   | Choosing transmission type, takes over selectedProtocolStateIndex | Passing TextField input to transmission function |
 
 ### Functions
-#### Choosing Transmission Type
+#### Choosing Transmission Type based on State Variable
   - onProtocolSelected: (String) -> Unit
     - onProtocolSelected --> Name of the parameter, represents a function that is called later
     - (String) --> String is passed to the Lambda-Function, which contains selected protocol
