@@ -97,7 +97,7 @@ fun PacketWatcherAppScaffold () {
                             Image(
                                 painter = painterResource(id = R.drawable.logo),
                                 contentDescription = "Logo",
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(48.dp)
                             )
                         }
                     }
