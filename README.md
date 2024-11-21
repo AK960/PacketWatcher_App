@@ -55,11 +55,11 @@
 
 ## Notes
 ### States
-| Variable Name            | UseCase                    | Description            |
-|--------------------------|----------------------------|------------------------|
-| `clientServerStateIndex` | Switching Tabs             | Client = 0, Server = 1 |
-| `stateVar2`              | Selecting Protocol to send | Values: {"TCP", "UDP"} |
-| `stateVar3`              |                            |                        |
+| Variable Name            | UseCase                    | Description                            |
+|--------------------------|----------------------------|----------------------------------------|
+| `clientServerStateIndex` | Switching Tabs             | Client = 0, Server = 1                 |
+| `stateVar2`              | Selecting Protocol to send | TCP or UDP                             |
+| `stateVar3`              |                            |                                        |
 
 ### Functions
 #### PacketWatcherClientView 
