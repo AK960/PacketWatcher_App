@@ -1,4 +1,4 @@
-package com.mobilkommunikation.project.ui
+package com.mobilkommunikation.project.ui.screens
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

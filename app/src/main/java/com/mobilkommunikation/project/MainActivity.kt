@@ -31,8 +31,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mobilkommunikation.project.ui.PacketWatcherClientView
-import com.mobilkommunikation.project.ui.PacketWatcherServerView
+import com.mobilkommunikation.project.ui.screens.PacketWatcherClientView
+import com.mobilkommunikation.project.ui.screens.PacketWatcherServerView
 
 data class BottomNavigationItem(
     val title: String,
@@ -132,7 +132,7 @@ fun PacketWatcherAppScaffold () {
                 }
             }
         )
-        { innerPadding ->
+        { innerPadding -> // Scaffold expects Lambda as last parameter to define its content
             Column (
                 modifier = Modifier
                     .fillMaxSize()
@@ -141,7 +141,7 @@ fun PacketWatcherAppScaffold () {
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 // If bottomBar Index set to Client, run functions that render client view, else server view
-                if (clientServerStateIndex != 0) {
+                if (clientServerStateIndex == 0) {
                     PacketWatcherClientView(
                         selectedProtocolStateIndex, // Start-Index for SegmentedControl set to TCP
                         onProtocolSelected = { selectedProtocolStateIndex = it }

@@ -75,37 +75,45 @@
     - The onClick-function in SegmentedControl calls the lambda function on the current option
     - Thus, the value from selectedProtocolStateIndex is updated to "UDP" when interaction with the UDP button
 
-### Theory Notes
-#### Lambda Functions
+## Theory Notes
+### Lambda Functions
+Characteristics:
+  - "Unit" represents an empty return value, like void
+  - Lambda-Function can be passed to dictate the behavior of the higher order function
+  - The value of the last expression is returned in the end
+  - They do not have names and can be passed as values
+
 Syntax: 
 ```sh
 # overall: Gets two values and returns one
 val operarion: (Type, Type) -> ReturnType = { param1, param2 -> someLogic }
 # Lambda expression in general 
 { param1: Type, param2: Type -> return value }
+# Examples:
+val add: (Int, Int) -> Int = { a, b -> a + b } # Returns solution as int
+val show: () -> Unit = { content -> Column ( ... ){ ... } }
+public fun Scaffold(
+  modifier: Modifier = Modifier,
+  topBar: @Composable () -> Unit = {},
+  (...)
+  content: @Composable (paddingValues) -> Unit
+) { innerPadding -> (...) } 
 ```
-  - "->" separates parameters from instructions
-  - "Unit" is empty return value, like void
-  - Allows to pass a user defined function that takes a string as input but returns nothing
-  - Function can be passed to manipulate the behavior of the higher order function
-  - The marker "->" can be inside the brackets or outside the function signature and has different meanings:
-```sh
-# Within: Indicates that this is a Lambda-Function that gets input values and return an output value
-# Outside: The "->" marks the beginning of the return of the Lambda-Expression
-val add: (Int, Int) -> Int = { a, b -> a + b }
-```
+
 Notation:
-  - Lambda functions can be passed to higher order functions as argument, like:
+Lambda functions can be passed to higher order functions as argument
 ```sh
-fun function (onProtocolSelected: (String) -> Unit) { some logic without returnValue }
-```
-  - To call the function: 
-  - If a function only has one parameter it can be referenced by "it"
-```sh
+fun functionName (
+  onProtocolSelected: (String) -> Unit
+) { someString -> 
+    println(someString) 
+}
+# To call the function
 onProtocolSelected { var = "someString" } 
-onProtocolSelected { var = it }
+# If a function only has one parameter it can be referenced by "it"
+onProtocolSelected { var = it } 
 ```
-  - If the Lambda-Function is the last argument of a function, the {} can be outside the argument block
+If the Lambda-Function is the last argument of a function, the {} can be outside the argument block
 ```sh
 listOf(1, 2, 3).forEach { println(it) }
 # instead of
@@ -114,12 +122,12 @@ list.forEach(fun(item: int) {
   println(item)
 }) 
 ```
-  - The Lambda-Function can have default parameters
+The Lambda-Function can have default parameters
 ```sh
 val greet: (String) -> Unit = { name -> println("Hello, $name!") }
 greet("Max")
 ```
-  - To compare with a common function
+Last but not least a simple comparison to a regular function
 ```sh
 # Normal
 fun add(a: Int, b: Int): Int {
@@ -128,16 +136,82 @@ fun add(a: Int, b: Int): Int {
 # Lambda
 val add = { a: Int, b: Int -> a + b }
 ```
-   - Lambdas do not have names and can be passed as values
-   - Lambda-Functions returns the value of the last expression, if there is more than "Unit" defined. In example with the Scaffold() function:
-```sh
-Scaffold(...) { innerPadding -> # innerPadding is a parameter and thus must be specified
-  Column (modifier = Modifier.padding(innerPadding)) {...} 
+### States
+Intro: Compose apps transform data into UI by calling composable functions. If the data 
+changes, Compose re-executes the functions with the new data, creating an updated UI 
+(recomposition). However, Compose does not track common variables and monitor its changes.
+The functions "State" / "mutableStateOf" / "mutableIntStateOf" are interfaces that hold
+values that are monitored by compose and trigger recompositions whenever their value changes. 
+
+Remember: If such a value is defined within a composable, it is prone to unwanted recompositions.
+When some other state-value changes, all state values would be reset. To preserve a state across
+compositions, the mutable state can be remembered. The remember-function is used to guard a state
+value against recomposition, so that it is not reset.
+```sh 
+@Compose
+fun Function(...) {
+  val myState = remember { mutableStateOf(false) } # accessing with "myState.value"
+  ( ... )
+}
+# or:
+fun Function(...) {
+  # "by" -> accessing state with only "myState"
+  # "mutableStateOf" -> state is remembered when rotating the screen
+  var myState by rememberSavable { mutableStateOf(false) } 
+  ( ... )
+}
+```
+However, when calling the same composable from different parts of the screen, it will create different 
+UI elements with their own version of the state - internal states can be thought of as private 
+variables in a class.
+User interactions with various interaction components can be dealt with using states.
+
+State hoisting: The term refers to the principle that state values can be declared in parent functions
+and passed on to child functions as lambda expression. To do so, action buttons like onClick() call
+functions and pass a lambda phrase as parameter. This way, composable functions are more flexible and 
+can better be reused for different views.
+```sh 
+@Composable
+fun MyApp(modifier: Modifier = Modifier) {
+    var shouldShowOnboarding by remember { mutableStateOf(true) }
+    Surface(modifier) {
+        if (shouldShowOnboarding) { # state is true, hence OnboardingScreen is shown
+            # passing function that tells OnboardingScreen to set state to false when button is clicked 
+            OnboardingScreen(onContinueClicked = { shouldShowOnboarding = false }) 
+        } else {
+            Greetings() # When state is set to false, Greetings are shown
+        }
+    }
+}
+@Composable
+fun OnboardingScreen(
+    onContinueClicked: () -> Unit, # Taking in state variable as lambda 
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text("Welcome to the Basics Codelab!")
+        Button(
+            modifier = Modifier
+                .padding(vertical = 24.dp),
+            # onClick executes the lambda function and finally sets state value to false
+            # new view is composed (@Compose tracks and remembers state variable)
+            onClick = onContinueClicked 
+        ) {
+            Text("Continue")
+        }
+    }
+}
 ```
 
-## To-Dos
+### ViewModels
 
-- Hier kommen To-Dos rein
+## To-Dos
+Server View:
+- Change button content if server is running (state variable)
 
 ## Bugs
 
