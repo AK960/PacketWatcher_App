@@ -7,15 +7,12 @@ fun handleSendButtonInteraction(
     protocolSelected: String
 ) {
     if (protocolSelected == "TCP") {
+        myLog(msg = "clientButtonHandler: $protocolSelected-Protocol selected")
         setupTransmission(ipAddress, portNumber, tcpMessage, protocolSelected)
-    } else setupTransmission(ipAddress, portNumber, tcpMessage, protocolSelected)
+    } else {
+        myLog(msg = "clientButtonHandler: $protocolSelected-Protocol selected")
+        setupTransmission(ipAddress, portNumber, tcpMessage, protocolSelected)
+    }
 }
 
-fun setupTransmission(
-    ipAddress: String,
-    portNumber: String,
-    tcpMessage: String,
-    protocolSelected: String
-) {
-    // TODO: Implement transmission logic here with flexible protocol parameter
-}
+

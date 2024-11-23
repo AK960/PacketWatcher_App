@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mobilkommunikation.project.controllers.myLog
 
 @Composable
 fun SegmentedControl(
@@ -16,6 +17,7 @@ fun SegmentedControl(
     selectedOption: String,
     onOptionSelected: (String) -> Unit
 ) {
+    myLog(msg = "Segmented Control: Selected Protocol: $selectedOption")
     Row {
         options.forEach { option ->
             Button(

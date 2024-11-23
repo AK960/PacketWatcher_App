@@ -9,6 +9,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mobilkommunikation.project.controllers.myLog
 
 @Composable
 fun InputFields(
@@ -38,6 +39,7 @@ fun InputFields(
                     .weight(1f)
                     .padding(4.dp)
             )
+            myLog(msg = "Input Fields: Chosen connection parameters: $ipAddress:$portNumber")
         }
     }
     Column {

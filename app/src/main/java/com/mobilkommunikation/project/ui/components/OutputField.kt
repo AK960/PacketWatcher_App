@@ -50,13 +50,15 @@ fun OutputField(outputText: String) {
                 .padding(8.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Text(
-                text = outputText,
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            )
+            Column {
+                    Text(
+                        text = outputText,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    )
+            }
         }
     }
 }

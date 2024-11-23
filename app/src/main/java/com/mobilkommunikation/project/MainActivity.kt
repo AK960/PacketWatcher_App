@@ -33,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mobilkommunikation.project.controllers.myLog
 import com.mobilkommunikation.project.ui.screens.PacketWatcherClientView
 import com.mobilkommunikation.project.ui.screens.PacketWatcherServerView
 
@@ -47,10 +48,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            myLog(msg = "MainActivity: Starting Application ...")
             PacketWatcherAppScaffold()
         }
     }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
@@ -70,6 +71,8 @@ fun PacketWatcherAppScaffold () {
     )
     var clientServerStateIndex by rememberSaveable { mutableIntStateOf(0) }
     var selectedProtocolStateIndex by rememberSaveable { mutableStateOf("TCP") }
+
+    myLog(msg = "PacketWatcherAppScaffold: Rendering Scaffold with Values ClientServerStateIndex: $clientServerStateIndex, SelectedProtocolStateIndex: $selectedProtocolStateIndex")
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -152,15 +155,19 @@ fun PacketWatcherAppScaffold () {
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 // If bottomBar Index set to Client, run functions that render client view, else server view
+
                 if (clientServerStateIndex == 0) {
+                    myLog(msg = "PacketWatcherAppScaffold: Switching Tabs: Client ($clientServerStateIndex) selected")
                     PacketWatcherClientView(
                         selectedProtocolStateIndex, // Start-Index for SegmentedControl set to TCP
                         onProtocolSelected = { selectedProtocolStateIndex = it }
                     )
                 } else {
+                    myLog(msg = "PacketWatcherAppScaffold: Switching Tabs: Server ($clientServerStateIndex) selected")
                     PacketWatcherServerView()
                 }
             }
         }
     }
+}
 }
