@@ -67,6 +67,7 @@ fun InputFields(
                 value = portNumber,
                 onValueChange = onPortNumberChange,
                 label = { Text("Port Nr.") },
+                // keyboardOptions = KeyboardOptions = KeyboardOptions.Default,
                 modifier = Modifier
                     .weight(1f)
                     .padding(4.dp)
