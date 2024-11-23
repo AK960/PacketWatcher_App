@@ -8,7 +8,6 @@ fun handleSendButtonInteraction(
 ) {
     if (protocolSelected == "TCP") {
         setupTransmission(ipAddress, portNumber, tcpMessage, protocolSelected)
-
     } else setupTransmission(ipAddress, portNumber, tcpMessage, protocolSelected)
 }
 

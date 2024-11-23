@@ -236,6 +236,14 @@ ViewModel is a class that exposes the state of the user interface and encapsulat
 logic. Its principal advantage is that it caches state and persists it through configuration changes. 
 This means that your UI does not have to fetch data again when navigating between activities.
 
+### Sockets
+Sockets are connection endpoints which relay traffic between client- and server-processes. For that, they are identified by the combination of IP address and port number. 
+#### Server Socket
+To communicate with a server process, it must be possible to address it from the outside. Thus, it binds itself to a socket through which it can be accessed and listens for incoming connections. If it receives a connection it accepts it and blocks the process until the request comes in, reads it, processes it, and responds. Afterwards it waits for further requests until the clients closes the connection.
+#### Client Socket
+The client does not need a fixed port but rather is assigned a free one. It then connects to the server, transmitting its own connection details through which it can be reached again. After transmitting the request, it waits for the servers response and listens on the specified port. Receiving the response, it either sends another request of closes the connection. 
+
+
 
 ## Contact
 <div>
