@@ -155,7 +155,6 @@ fun PacketWatcherAppScaffold () {
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 // If bottomBar Index set to Client, run functions that render client view, else server view
-
                 if (clientServerStateIndex == 0) {
                     myLog(msg = "PacketWatcherAppScaffold: Switching Tabs: Client ($clientServerStateIndex) selected")
                     PacketWatcherClientView(
@@ -164,7 +163,9 @@ fun PacketWatcherAppScaffold () {
                     )
                 } else {
                     myLog(msg = "PacketWatcherAppScaffold: Switching Tabs: Server ($clientServerStateIndex) selected")
-                    PacketWatcherServerView()
+                    PacketWatcherServerView(
+
+                    )
                 }
             }
         }

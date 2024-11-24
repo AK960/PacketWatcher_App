@@ -1,6 +1,5 @@
 package com.mobilkommunikation.project.ui.components
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,38 +19,34 @@ fun InputFields(
     tcpMessage: String,
     onTcpMessageChange: (String) -> Unit
 ) {
-    Column {
-        Row(modifier = Modifier.fillMaxWidth()) {
-            TextField(
-                value = ipAddress,
-                onValueChange = onIpAddressChange,
-                label = { Text("IP-Address") },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(4.dp)
-            )
-            TextField(
-                value = portNumber,
-                onValueChange = onPortNumberChange,
-                label = { Text("Port Nr.") },
-                // keyboardOptions = KeyboardOptions = KeyboardOptions.Default,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(4.dp)
-            )
-            myLog(msg = "Input Fields: Chosen connection parameters: $ipAddress:$portNumber")
-        }
+    Row(modifier = Modifier.fillMaxWidth()) {
+        TextField(
+            value = ipAddress,
+            onValueChange = onIpAddressChange,
+            label = { Text("IP-Address") },
+            modifier = Modifier
+                .weight(1f)
+                .padding(4.dp)
+        )
+        TextField(
+            value = portNumber,
+            onValueChange = onPortNumberChange,
+            label = { Text("Port Nr.") },
+            // keyboardOptions = KeyboardOptions = KeyboardOptions.Default,
+            modifier = Modifier
+                .weight(1f)
+                .padding(4.dp)
+        )
+        myLog(msg = "Input Fields: Chosen connection parameters: $ipAddress:$portNumber")
     }
-    Column {
-        Row (modifier = Modifier.fillMaxWidth()) {
-            TextField(
-                value = tcpMessage,
-                onValueChange = onTcpMessageChange,
-                label = { Text("Payload") },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(4.dp)
-            )
-        }
-    }
+    Row (modifier = Modifier.fillMaxWidth()) {
+        TextField(
+            value = tcpMessage,
+            onValueChange = onTcpMessageChange,
+            label = { Text("Payload") },
+            modifier = Modifier
+                .weight(1f)
+                .padding(4.dp)
+        )
+}
 }
