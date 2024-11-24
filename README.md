@@ -245,5 +245,8 @@ To communicate with a server process, it must be possible to address it from the
 The client does not need a fixed port but rather is assigned a free one. It then connects to the server, transmitting its own connection details through which it can be reached again. After transmitting the request, it waits for the servers response and listens on the specified port. Receiving the response, it either sends another request of closes the connection. 
 
 ## Useful Links and Material
-[ibm socket-programming infos]: https://www.ibm.com/docs/de/i/7.5?topic=communications-socket-programming
-[ibm socket-programming book]: https://www.ibm.com/docs/de/ssw_ibm_i_75/pdf/rzab6pdf.pdf
+[IBM Socket Programming Infos][ibm socket-programming infos]
+[IBM Socket Programming Book][ibm socket-programming book]
+
+[ibm socket-programming infos]:https://www.ibm.com/docs/de/i/7.5?topic=communications-socket-programming
+[ibm socket-programming book]:https://www.ibm.com/docs/de/ssw_ibm_i_75/pdf/rzab6pdf.pdf
