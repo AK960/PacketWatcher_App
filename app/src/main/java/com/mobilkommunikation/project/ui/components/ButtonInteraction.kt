@@ -11,6 +11,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.mobilkommunikation.project.controllers.myLog
 
+// Client Side
+@Composable
+fun SendButton(onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+    ) {
+        Text("Send")
+    }
+}
+
+// Server Side
 @Composable
 fun ServerButtons(
     options: List<String>,
@@ -20,7 +34,7 @@ fun ServerButtons(
         modifier = Modifier.fillMaxWidth()
     ) {
         options.forEach { option ->
-            myLog(msg = "Rendering $option Button")
+            myLog(msg = "StartServerButton: Rendering $option Button")
             Button(
                 onClick = { onClick(option) },
                 modifier = Modifier

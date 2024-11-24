@@ -1,10 +1,13 @@
 package com.mobilkommunikation.project.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,41 +32,51 @@ fun PacketWatcherServerView(
     var ipAddress by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
 
-    ServerInputFields(
-        ipAddress = "",
-        onIpAddressChange = { ipAddress = it },
-    )
-    ServerButtons(
-        options = listOf("TCP", "UDP"),
-        onClick = { option ->
-            if(isValidIpAddress(ipAddress)) {
-                handleStartServerInteraction(
-                    ipAddress = ipAddress,
-                    protocolSelected = option
-                )
-                errorMessage = ""
-                myLog(msg = "PacketWatcherServerView: Trying to start $option Server on $ipAddress")
-            } else {
-                errorMessage = "Input Error: Invalid IP address"
-                myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
-            }
-
-        }
-    )
-    if (errorMessage.isNotEmpty()) {
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        ServerInputFields(
+            ipAddress = "",
+            onIpAddressChange = { ipAddress = it },
+        )
         Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = errorMessage,
-                color = Color.Red,
-            )
+
+        ServerButtons(
+            options = listOf("TCP", "UDP"),
+            onClick = { option ->
+                if (isValidIpAddress(ipAddress)) {
+                    handleStartServerInteraction(
+                        ipAddress = ipAddress,
+                        protocolSelected = option
+                    )
+                    errorMessage = ""
+                    myLog(msg = "PacketWatcherServerView: Trying to start $option Server on $ipAddress")
+                } else {
+                    errorMessage = "Input Error: Invalid IP address"
+                    myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
+                }
+
+            }
+        )
+        if (errorMessage.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        } else {
+            Spacer(modifier = Modifier.height(16.dp))
         }
+        OutputField(outputText = "Display Output here")
     }
-    Spacer(modifier = Modifier.height(16.dp))
-    OutputField(outputText = "Display Output here")
 }
 
 

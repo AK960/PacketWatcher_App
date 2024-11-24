@@ -52,6 +52,7 @@ class MainActivity : ComponentActivity() {
             PacketWatcherAppScaffold()
         }
     }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
@@ -170,5 +171,4 @@ fun PacketWatcherAppScaffold () {
             }
         }
     }
-}
 }

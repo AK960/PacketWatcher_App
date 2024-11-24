@@ -1,14 +1,33 @@
 package com.mobilkommunikation.project.controllers
 
+import java.net.DatagramPacket
+import java.net.DatagramSocket
 import java.net.ServerSocket
 import java.net.Socket
+import kotlin.concurrent.thread
 
-fun startServerSocket (
+fun getRandomAvailablePort(): Int {
+    ServerSocket(0).use { socket ->
+        return socket.localPort
+    }
+}
+
+fun handleStartServerRequest(
     ipAddress: String,
     portNumber: Int = getRandomAvailablePort(),
     protocolSelected: String
 ) {
-    myLog(msg = "serverSocket: Preparing $protocolSelected-Server")
+    when (protocolSelected) {
+        "TCP" -> startTcpServer(ipAddress, portNumber)
+        "UDP" -> startUdpServer(ipAddress, portNumber)
+    }
+}
+
+fun startTcpServer (
+    ipAddress: String,
+    portNumber: Int = getRandomAvailablePort()
+) {
+    myLog(msg = "serverSocket: Preparing TCP-Server")
 
     // Create server socket to listen on random port
     val serverSocket = ServerSocket(portNumber)
@@ -18,15 +37,42 @@ fun startServerSocket (
         val clientSocket: Socket = serverSocket.accept()
         myLog(msg = "serverSocket: Client connected: ${clientSocket.inetAddress.hostAddress}")
 
-        clientSocket.getOutputStream().write("Welcome to Server ${serverSocket.inetAddress.hostAddress}".toByteArray())
-
-        myLog(msg = "serverSocket: Closing connection")
+        // TODO: Implement Logic here to display stream in outputFields and to respond to messages from client
+        // TODO: Implement Exception handling
+        thread {
+            clientSocket.use {
+                val output = it.getOutputStream()
+                output.write("serverSocket: Connected to TCP-Server at ${serverSocket.inetAddress.hostAddress}".toByteArray())
+            }
+        }
+        myLog(msg = "serverSocket: Closing TCP connection with client ${clientSocket.inetAddress.hostAddress}")
         clientSocket.close()
     }
 }
 
-fun getRandomAvailablePort(): Int {
-    ServerSocket(0).use { socket ->
-        return socket.localPort
+fun startUdpServer(
+    ipAddress: String,
+    portNumber: Int = getRandomAvailablePort()
+) {
+    val socket = DatagramSocket(portNumber)
+    myLog(msg = "serverSocket: UDP-Server is listening on port $portNumber")
+
+    val buffer = ByteArray(1024)
+    while (true) {
+        val packet = DatagramPacket(buffer, buffer.size)
+        socket.receive(packet)
+        val received = String(packet.data, 0, packet.length)
+        myLog(msg = "serverSocket: Received message: $received from ${packet.address}:${packet.port}")
+
+        // TODO: Implement Logic here to display stream in outputFields and to respond to messages from client
+        // TODO: Implement Exception handling
+        thread {
+            val response = "Message received!"
+            val responsePacket =
+                DatagramPacket(response.toByteArray(), response.length, packet.address, packet.port)
+            socket.send(responsePacket)
+            myLog(msg = "serverSocket: Sent response: $response to ${packet.address}:${packet.port}")
+        }
     }
 }
+

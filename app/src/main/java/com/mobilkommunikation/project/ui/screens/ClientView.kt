@@ -1,10 +1,13 @@
 package com.mobilkommunikation.project.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,49 +37,57 @@ fun PacketWatcherClientView (
     var tcpMessage by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
 
-    SegmentedControl(
-        options = listOf("TCP", "UDP"),
-        selectedOption = selectedProtocolStateIndex,
-        onOptionSelected = onProtocolSelected
-    )
-    Spacer(modifier = Modifier.height(16.dp))
-    InputFields(
-        ipAddress = "",
-        onIpAddressChange = { ipAddress = it },
-        portNumber = "",
-        onPortNumberChange = { portNumber = it },
-        tcpMessage = "",
-        onTcpMessageChange = { tcpMessage = it }
-    )
-    Spacer(modifier = Modifier.height(16.dp))
-    SendButton {
-        if (isValidIpAddress(ipAddress) && isValidPortNumber(portNumber)) {
-            handleSendButtonInteraction(
-                ipAddress = ipAddress,
-                portNumber = portNumber,
-                tcpMessage = tcpMessage,
-                protocolSelected = selectedProtocolStateIndex
-            )
-            errorMessage = ""
-            myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to connect to $ipAddress:$portNumber")
-        } else {
-            errorMessage = "Input Error: Invalid IP address or port number"
-            myLog(type = "error", msg = "PacketWatcherClientView: $errorMessage")
-        }
-    }
-    if (errorMessage.isNotEmpty()) {
+    Column (
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        SegmentedControl(
+            options = listOf("TCP", "UDP"),
+            selectedOption = selectedProtocolStateIndex,
+            onOptionSelected = onProtocolSelected
+        )
         Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = errorMessage,
-                color = Color.Red,
-            )
+        InputFields(
+            ipAddress = "",
+            onIpAddressChange = { ipAddress = it },
+            portNumber = "",
+            onPortNumberChange = { portNumber = it },
+            tcpMessage = "",
+            onTcpMessageChange = { tcpMessage = it }
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        SendButton {
+            if (isValidIpAddress(ipAddress) && isValidPortNumber(portNumber)) {
+                handleSendButtonInteraction(
+                    ipAddress = ipAddress,
+                    portNumber = portNumber,
+                    tcpMessage = tcpMessage,
+                    protocolSelected = selectedProtocolStateIndex
+                )
+                errorMessage = ""
+                myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to connect to $ipAddress:$portNumber")
+            } else {
+                errorMessage = "Input Error: Invalid IP address or port number"
+                myLog(type = "error", msg = "PacketWatcherClientView: $errorMessage")
+            }
         }
+        if (errorMessage.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        } else {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        OutputField(outputText = "Display Output here")
     }
-    Spacer(modifier = Modifier.height(16.dp))
-    OutputField(outputText = "Display Output here")
 }
 

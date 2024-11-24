@@ -48,9 +48,7 @@
     <li><a href="#notes">Notes</a></li>
     <li><a href="#to-dos">To-Dos</a></li>
     <li><a href="#bugs">Bugs</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
   </ol>
-  
 </details>
 
 ## Notes
@@ -82,17 +80,26 @@
 #### 
 
 ## To-Dos
-Server View:
+### Must <!-- Critical, must be delivered for project success -->
+- Output In- and Outstream of sockets in LogCat
+- Output of communication endoint in LogCat
+- Output Log Messages regarding Server Socket, especially bounded portnumber
+- Outsourcing of socket.accept() off the main thread
+- Timeout to close server socket if no request comes in 
+
+### Should <!-- Important but less time critial, can be implemented later --> 
+- Output In- and Outstream of sockets in output Field
 - Change button content if server is running (state variable)
+- Making outputFields scrollable
+- Coping with screen rotation 
+
+### Could <!-- Desirable but not critical -->
+- Changing App Theme & Colors
+- Adding ViewModels for app composition
 
 ## Bugs
-- Hier kommen Bugs rein
-
-## Roadmap
-- [ ] Feature 1
-- [ ] Feature 2
-- [ ] Feature 3
-  - [ ] Nested Feature
+- Not possible to interact with app running on android studio emulator
+- 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -243,6 +250,9 @@ To communicate with a server process, it must be possible to address it from the
 #### Client Socket
 The client does not need a fixed port but rather is assigned a free one. It then connects to the server, transmitting its own connection details through which it can be reached again. After transmitting the request, it waits for the servers response and listens on the specified port. Receiving the response, it either sends another request of closes the connection. 
 
+## Useful Links and Material
+[ibm socket-programming infos]https://www.ibm.com/docs/de/i/7.5?topic=communications-socket-programming
+[ibm socket-programming book]https://www.ibm.com/docs/de/ssw_ibm_i_75/pdf/rzab6pdf.pdf
 
 
 ## Contact
