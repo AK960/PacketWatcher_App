@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.mobilkommunikation.project.controllers.handleStartServerInteraction
-import com.mobilkommunikation.project.controllers.isValidIpAddress
 import com.mobilkommunikation.project.controllers.myLog
 import com.mobilkommunikation.project.ui.components.OutputField
 import com.mobilkommunikation.project.ui.components.ServerButtons
@@ -46,17 +45,17 @@ fun PacketWatcherServerView(
         ServerButtons(
             options = listOf("TCP", "UDP"),
             onClick = { option ->
-                if (isValidIpAddress(ipAddress)) {
+                //if (isValidIpAddress(ipAddress)) {
                     handleStartServerInteraction(
-                        ipAddress = ipAddress,
+                        ipAddress = "127.0.0.1",//ipAddress,
                         protocolSelected = option
                     )
                     errorMessage = ""
                     myLog(msg = "PacketWatcherServerView: Trying to start $option Server on $ipAddress")
-                } else {
+                /*} else {
                     errorMessage = "Input Error: Invalid IP address"
                     myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
-                }
+                }*/
 
             }
         )
