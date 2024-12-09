@@ -1,4 +1,8 @@
-package com.mobilkommunikation.project.controllers
+package com.mobilkommunikation.project.utils
+
+import com.mobilkommunikation.project.service.tcp.setupTransmission
+import com.mobilkommunikation.project.service.tcp.startTcpServer
+import com.mobilkommunikation.project.service.udp.startUdpServer
 
 // Client Side
 fun handleSendButtonInteraction(
@@ -21,11 +25,10 @@ fun handleStartServerInteraction(
     ipAddress: String,
     protocolSelected: String
 ) {
-    if (protocolSelected == "TCP") {
-        myLog(msg = "serverButtonHandler: $protocolSelected-Protocol selected")
-        handleStartServerRequest(ipAddress = ipAddress, protocolSelected = protocolSelected)
-    } else {
-        myLog(msg = "serverButtonHandler: $protocolSelected-Protocol selected")
+    myLog(msg = "serverButtonHandler: $protocolSelected-Protocol selected")
+    when (protocolSelected) {
+        "TCP" -> startTcpServer(ipAddress)
+        "UDP" -> startUdpServer(ipAddress)
     }
 }
 

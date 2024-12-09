@@ -17,16 +17,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.mobilkommunikation.project.controllers.handleStartServerInteraction
-import com.mobilkommunikation.project.controllers.myLog
 import com.mobilkommunikation.project.ui.components.OutputField
 import com.mobilkommunikation.project.ui.components.ServerButtons
 import com.mobilkommunikation.project.ui.components.ServerInputFields
+import com.mobilkommunikation.project.utils.handleStartServerInteraction
+import com.mobilkommunikation.project.utils.myLog
 
 @Composable
-fun PacketWatcherServerView(
-
-) {
+fun PacketWatcherServerView() {
     myLog(msg = "PacketWatcherServerView: Rendering Server View")
     var ipAddress by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf("") }

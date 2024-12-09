@@ -33,9 +33,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mobilkommunikation.project.controllers.myLog
 import com.mobilkommunikation.project.ui.screens.PacketWatcherClientView
 import com.mobilkommunikation.project.ui.screens.PacketWatcherServerView
+import com.mobilkommunikation.project.utils.myLog
 
 data class BottomNavigationItem(
     val title: String,

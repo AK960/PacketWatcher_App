@@ -17,10 +17,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.mobilkommunikation.project.controllers.handleSendButtonInteraction
-import com.mobilkommunikation.project.controllers.isValidIpAddress
-import com.mobilkommunikation.project.controllers.isValidPortNumber
-import com.mobilkommunikation.project.controllers.myLog
+import com.mobilkommunikation.project.utils.handleSendButtonInteraction
+import com.mobilkommunikation.project.utils.isValidIpAddress
+import com.mobilkommunikation.project.utils.isValidPortNumber
+import com.mobilkommunikation.project.utils.myLog
 import com.mobilkommunikation.project.ui.components.InputFields
 import com.mobilkommunikation.project.ui.components.OutputField
 import com.mobilkommunikation.project.ui.components.SegmentedControl

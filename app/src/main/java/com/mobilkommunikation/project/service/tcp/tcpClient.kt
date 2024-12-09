@@ -1,4 +1,6 @@
-package com.mobilkommunikation.project.controllers
+package com.mobilkommunikation.project.service.tcp
+
+import com.mobilkommunikation.project.utils.myLog
 
 fun setupTransmission(
     ipAddress: String,
