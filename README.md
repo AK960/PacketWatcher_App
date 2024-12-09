@@ -59,7 +59,7 @@ In the following Notes section, the status quo of the project is noted down, for
 #### Choosing Transmission Type based on State Variable
   - onProtocolSelected: (String) -> Unit
     - onProtocolSelected --> Name of the parameter, represents a function that is called later
-    - (String) --> String is passed to the Lambda-Function, which contains selected protocol
+    - (String) --> Strigit sng is passed to the Lambda-Function, which contains selected protocol
       - Variable selectedProtocolStateIndex = it (it from if-statement) is passed ("TCP" or "UDP")
     - Unit --> Function does not return a value (synonym to void)
   - Function expects Lambda-Function as argument that passes some behavior/logic to the function
