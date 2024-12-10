@@ -8,6 +8,6 @@ fun setupTransmission(
     tcpMessage: String,
     protocolSelected: String
 ) {
-    myLog(msg = "clientSocket: Establishing $protocolSelected-Connection to $ipAddress:$portNumber with message: $tcpMessage")
+    myLog(msg = "tcpClient: Establishing $protocolSelected-Connection to $ipAddress:$portNumber with message: $tcpMessage")
     // TODO: Implement transmission logic here with flexible protocol parameter
 }
