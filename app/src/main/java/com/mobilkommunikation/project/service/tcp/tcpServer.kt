@@ -2,8 +2,6 @@ package com.mobilkommunikation.project.service.tcp
 
 import com.mobilkommunikation.project.utils.getAvailablePort
 import com.mobilkommunikation.project.utils.myLog
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.io.IOException
 import java.net.InetAddress
 import java.net.ServerSocket
@@ -11,26 +9,23 @@ import java.net.ServerSocket
 fun startTcpServer (
     ipAddress: String,
     portNumber: Int = getAvailablePort()
-) = runBlocking {
-    launch {
-        myLog(msg = "tcpServer: Preparing TCP-Server.")
+) {
+    myLog(msg = "tcpServer: Preparing TCP-Server.")
 
-        val inetAddress = InetAddress.getByName(ipAddress)
-        val serverSocket = ServerSocket(portNumber, 0, inetAddress)
+    val inetAddress = InetAddress.getByName(ipAddress)
+    val serverSocket = ServerSocket(portNumber, 0, inetAddress)
 
-        try {
-            myLog(msg = "tcpServer: Server listening on ${serverSocket.localSocketAddress}.")
-            while (true) {
-                val clientSocket = serverSocket.accept()
-                myLog(msg = "tcpServer: Client connected: ${clientSocket.inetAddress.hostAddress}")
+    try {
+        myLog(msg = "tcpServer: Server listening on ${serverSocket.localSocketAddress}.")
+        while (true) {
+            val clientSocket = serverSocket.accept()
+            myLog(msg = "tcpServer: Client connected: ${clientSocket.inetAddress.hostAddress}")
 
-            }
-        } catch (e: IOException) {
-            myLog(type = "error", msg = "tcpServer: Error: ${e.message}")
-            e.printStackTrace()
         }
+    } catch (e: IOException) {
+        myLog(type = "error", msg = "tcpServer: Error: ${e.message}")
+        e.printStackTrace()
     }
-
     // Create a server socket to listen on random port
 }
 
