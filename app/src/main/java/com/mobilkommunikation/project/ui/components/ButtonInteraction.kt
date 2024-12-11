@@ -9,7 +9,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.mobilkommunikation.project.utils.myLog
 
 // Client Side
 @Composable
@@ -27,23 +26,30 @@ fun SendButton(onClick: () -> Unit) {
 // Server Side
 @Composable
 fun ServerButtons(
-    options: List<String>,
-    onClick : (String) -> Unit,
+    tcpServerStatus: String,
+    udpServerStatus: String,
+    onClick: (String) -> Unit,
 ) {
-    Row (
+    Row(
         modifier = Modifier.fillMaxWidth()
     ) {
-        options.forEach { option ->
-            myLog(msg = "StartServerButton: Rendering $option Button")
-            Button(
-                onClick = { onClick(option) },
-                modifier = Modifier
-                    .padding(4.dp)
-                    .height(56.dp)
-                    .weight(1f)
-            ) {
-                Text("Start $option Server")
-            }
+        Button(
+            onClick = { onClick("TCP") },
+            modifier = Modifier
+                .padding(4.dp)
+                .height(56.dp)
+                .weight(1f)
+        ) {
+            Text("$tcpServerStatus TCP Server")
+        }
+        Button(
+            onClick = { onClick("UDP") },
+            modifier = Modifier
+                .padding(4.dp)
+                .height(56.dp)
+                .weight(1f)
+        ) {
+            Text("$udpServerStatus UDP Server")
         }
     }
 }

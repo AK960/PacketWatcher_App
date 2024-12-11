@@ -97,7 +97,7 @@ In the following Notes section, the status quo of the project is noted down, for
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-## Theory Notes
+## Theory Notes - General Programming
 ### Lambda Functions
 Characteristics:
   - "Unit" represents an empty return value, like void
@@ -160,6 +160,55 @@ val add = { a: Int, b: Int -> a + b }
 ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Sockets
+Sockets are connection endpoints which relay traffic between client- and server-processes. For that, they are identified by the combination of IP address and port number.
+- Server Socket: To communicate with a server process, it must be possible to address it from the outside. Thus, it binds itself to a socket through which it can be accessed and listens for incoming connections. If it receives a connection it accepts it and blocks the process until the request comes in, reads it, processes it, and responds. Afterwards it waits for further requests until the clients closes the connection.
+- Client Socket: The client does not need a fixed port but rather is assigned a free one. It then connects to the server, transmitting its own connection details through which it can be reached again. After transmitting the request, it waits for the servers response and listens on the specified port. Receiving the response, it either sends another request of closes the connection.
+#### Connection Oriented (TCP)
+Connection oriented protocols establish a connection before exchanging data. The workflow is as follows: 
+##### Server Side
+```sh
+val ipAddress = "192.168.1.1"
+val port = 8080
+# 1. Create a ServerSocket
+val serverSocket = ServerSocket(port)
+# 2. Bind socket (optional)
+serverSocket.bind(InetSocketAddress(ipAddress, port))
+# 3. Queue connections (server calls listen() to queue incoming connections - handled automatically in Java/Kotlin
+serverSocket.listen()
+# 4. Accept connections
+val clientSocket = serverSocket.accept()
+# 5. Read and write data: as soon as a connection is established, Server can read data and send response
+val input = clientSocket.getInputStream().bufferedReader().readLine()
+val output = clientSocket.getOutputStream()
+output.write("Hello Client\n".toByteArray())
+# 6. Close Connection
+clientSocket.close()
+```
+Note: The class ServerSocket already implements the binding of sockets to an address and a port internally. When calling
+ServerSocket(), the socket is bound to the IP 0.0.0.0, which represents all available interfaces, and the specified port
+by default. 
+To provide an IP-address manually, call InetSocketAddress() - see above.
+##### Client Side
+```sh
+# 1. Create a Socket
+val socket = Socket()
+# 2. Connect to server
+socket.connect(InetSocketAddress(ipAddress, port))
+# 3. Send data
+val output = socket.getOutputStream()
+output.write("Hello Server\n".toByteArray())
+# 4. Receive data
+val input = socket.getInputStream().bufferedReader().readLine()
+println("Received from server: $input")
+# 5. Close connection
+socket.close()
+```
+#### Connectionless (UDP)
+##### Server side
+
+
+## Theory Notes - Jetpack Compose / Kotlin Specific
 ### States
 Intro: Compose apps transform data into UI by calling composable functions. If the data 
 changes, Compose re-executes the functions with the new data, creating an updated UI 
@@ -232,17 +281,27 @@ fun OnboardingScreen(
 ```
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+### Coroutines
+Coroutines are the Kotline equivalent to threads in Java. By sourcing out activities to background threads, we can make sure, that the main thread
+where the UI-functions are running on are not blocked when i.e. performing a network operation that waits for a result and blocks the thread it is
+running on for the time being.
+A simple syntax to start a coroutine is the following: 
+```sh
+# simple coroutine with simulated activity (delay in ms)
+fun startTcpServer (
+    portNumber: Int = getAvailablePort()
+): Job {
+    return GlobalScope.launch(Dispatchers.IO) {
+      # creating socket and server logic
+    }
+```
+- GlobalScope.launch: defines a coroutine in a global environment where it is not bound to a certain scope such as a view / viewmodel and keeps running independently. Used for starting coroutines that that live for the entire lifespan of the application.
+- Job: A job represents a coroutine and enables it to be controlled through certain methods (e.g. starting, stopping, querying the status). A job is returned when a coroutine is started (e.g. by launch). This job can be used to cancel the coroutine later or to check its status.
+
 ### ViewModels
 ViewModel is a class that exposes the state of the user interface and encapsulates the associated
 logic. Its principal advantage is that it caches state and persists it through configuration changes. 
 This means that your UI does not have to fetch data again when navigating between activities.
-
-### Sockets
-Sockets are connection endpoints which relay traffic between client- and server-processes. For that, they are identified by the combination of IP address and port number. 
-#### Server Socket
-To communicate with a server process, it must be possible to address it from the outside. Thus, it binds itself to a socket through which it can be accessed and listens for incoming connections. If it receives a connection it accepts it and blocks the process until the request comes in, reads it, processes it, and responds. Afterwards it waits for further requests until the clients closes the connection.
-#### Client Socket
-The client does not need a fixed port but rather is assigned a free one. It then connects to the server, transmitting its own connection details through which it can be reached again. After transmitting the request, it waits for the servers response and listens on the specified port. Receiving the response, it either sends another request of closes the connection. 
 
 ## Useful Links and Material
 [IBM Socket Programming Infos][ibm socket-programming infos]

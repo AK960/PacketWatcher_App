@@ -12,14 +12,17 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ServerInputFields(
-    ipAddress: String,
-    onIpAddressChange: (String) -> Unit,
+    portNumber: Int,
+    onPortNumberChange: (Int) -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         TextField(
-            value = ipAddress,
-            onValueChange = onIpAddressChange,
-            label = { Text("IP-Address") },
+            value = "",
+            onValueChange = { newValue ->
+                val intValue = newValue.toIntOrNull() ?: portNumber
+                onPortNumberChange(intValue)
+            },
+            label = { Text("Port Number") },
             modifier = Modifier
                 .weight(0.6f)
                 .padding(4.dp)

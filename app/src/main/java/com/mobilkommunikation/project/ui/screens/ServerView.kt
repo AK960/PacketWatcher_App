@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -20,42 +21,78 @@ import androidx.compose.ui.unit.dp
 import com.mobilkommunikation.project.ui.components.OutputField
 import com.mobilkommunikation.project.ui.components.ServerButtons
 import com.mobilkommunikation.project.ui.components.ServerInputFields
+import com.mobilkommunikation.project.utils.getAvailablePort
 import com.mobilkommunikation.project.utils.handleStartServerInteraction
+import com.mobilkommunikation.project.utils.handleStopServerInteraction
 import com.mobilkommunikation.project.utils.myLog
 
 @Composable
 fun PacketWatcherServerView() {
     myLog(msg = "PacketWatcherServerView: Rendering Server View")
-    var ipAddress by rememberSaveable { mutableStateOf("") }
+    var portNumber by rememberSaveable { mutableIntStateOf(0) }
     var errorMessage by rememberSaveable { mutableStateOf("") }
+    var tcpServerStatus by rememberSaveable { mutableStateOf("Start") }
+    var udpServerStatus by rememberSaveable { mutableStateOf("Start") }
+    var messages by rememberSaveable { mutableStateOf(listOf<String>()) }
+        // TODO: Implement logic to output messages on Screen
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
         ServerInputFields(
-            ipAddress = "",
-            onIpAddressChange = { ipAddress = it },
+            portNumber = portNumber,
+            onPortNumberChange = { portNumber = it },
         )
         Spacer(modifier = Modifier.height(16.dp))
 
         ServerButtons(
-            options = listOf("TCP", "UDP"),
+            tcpServerStatus = tcpServerStatus,
+            udpServerStatus = udpServerStatus,
             onClick = { option ->
-                //if (isValidIpAddress(ipAddress)) {
-                    handleStartServerInteraction(
-                        ipAddress = "127.0.0.1",//ipAddress,
-                        protocolSelected = option
-                    )
-                    errorMessage = ""
-                    myLog(msg = "PacketWatcherServerView: Trying to start $option Server on $ipAddress")
-                /*} else {
-                    errorMessage = "Input Error: Invalid IP address"
-                    myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
-                }*/
-
-            }
+                val actualPortNumber = if (portNumber == 0) getAvailablePort() else portNumber
+                when (option) {
+                    "TCP" -> {
+                        if (tcpServerStatus == "Start") {
+                            handleStartServerInteraction(
+                                portNumber = actualPortNumber,
+                                protocolSelected = option,
+                                serverStatus = tcpServerStatus
+                            )
+                            tcpServerStatus = "Stop"
+                            errorMessage = ""
+                            myLog(msg = "PacketWatcherServerView: Trying to start $option Server on port $actualPortNumber")
+                        } else {
+                            handleStopServerInteraction(
+                                protocolSelected = option
+                            )
+                            tcpServerStatus = "Start"
+                            errorMessage = ""
+                            myLog(msg = "PacketWatcherServerView: Stopping $option Server")
+                        }
+                    }
+                    "UDP" -> {
+                        if (udpServerStatus == "Start") {
+                            handleStartServerInteraction(
+                                portNumber = actualPortNumber,
+                                protocolSelected = option,
+                                serverStatus = udpServerStatus
+                            )
+                            udpServerStatus = "Stop"
+                            errorMessage = ""
+                            myLog(msg = "PacketWatcherServerView: Trying to start $option Server on port $actualPortNumber")
+                        } else {
+                            handleStopServerInteraction(
+                                protocolSelected = option
+                            )
+                            udpServerStatus = "Start"
+                            errorMessage = ""
+                            myLog(msg = "PacketWatcherServerView: Stopping $option Server")
+                        }
+                    }
+                }
+            },
         )
         if (errorMessage.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
