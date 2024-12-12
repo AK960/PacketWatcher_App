@@ -1,6 +1,7 @@
 package com.mobilkommunikation.project.service.tcp
 
 import com.mobilkommunikation.project.utils.myLog
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -11,8 +12,10 @@ import java.io.IOException
 import java.net.ServerSocket
 import java.net.Socket
 
+@OptIn(DelicateCoroutinesApi::class)
 fun startTcpServer (
-    portNumber: Int
+    portNumber: Int,
+    onMessageReceived: (message: String, String) -> Unit
 ): Job {
     return GlobalScope.launch(Dispatchers.IO) {
         val serverSocket = ServerSocket(portNumber)

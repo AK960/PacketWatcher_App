@@ -282,9 +282,9 @@ fun OnboardingScreen(
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Coroutines
-Coroutines are the Kotline equivalent to threads in Java. By sourcing out activities to background threads, we can make sure, that the main thread
-where the UI-functions are running on are not blocked when i.e. performing a network operation that waits for a result and blocks the thread it is
-running on for the time being.
+Coroutines are design patterns in Kotlin, equivalent to threads in Java, for handling asynchronous tasks. By sourcing out activities to 
+background threads, we can make sure, that the main thread where the UI-functions are running on are not blocked when i.e. performing a 
+network operation that waits for a result and blocks the thread it is running on for the time being.
 A simple syntax to start a coroutine is the following: 
 ```sh
 # simple coroutine with simulated activity (delay in ms)
@@ -295,8 +295,102 @@ fun startTcpServer (
       # creating socket and server logic
     }
 ```
-- GlobalScope.launch: defines a coroutine in a global environment where it is not bound to a certain scope such as a view / viewmodel and keeps running independently. Used for starting coroutines that that live for the entire lifespan of the application.
-- Job: A job represents a coroutine and enables it to be controlled through certain methods (e.g. starting, stopping, querying the status). A job is returned when a coroutine is started (e.g. by launch). This job can be used to cancel the coroutine later or to check its status.
+Coroutine Builders:
+```sh
+import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+    val job = GlobalScope.launch(Dispatchers.IO) {
+        val data = fetchDataFromNetwork()
+        withContext(Dispatchers.Main) {
+            updateUI(data)
+        }
+    }
+}
+
+suspend fun fetchDataFromNetwork(): String {
+    delay(1000) // Simulate network delay
+    return "Data from network"
+}
+
+fun updateUI(data: String) {
+    println("Updating UI with: $data")
+}
+```
+- launch: starts a new coroutine. It is typically used for tasks that do not return a result or where you do not need to wait for the task to
+complete.
+  - Purpose: launch a new coroutine
+  - Return Type: Job - can be used to manage coroutine
+  - Use Case: Fire and forget tasks
+  - Behavior: Runs concurrently with the rest of the code; non-blocking
+- withContext: switches the context of the current coroutine. It is used for tasks where you need to get a result or when you need to switch
+to a different dispatcher temporarily
+  - Purpose: Change the coroutine context
+  - Return Type: Result of the block of code
+  - Use Case: Executing a block of code in a different context and getting the result
+  - Behavior: Suspend the coroutine until the block completes; does not block the thread
+- Jobs: manage / control the lifecycle of coroutines through certain methods (e.g. starting, stopping, querying the status). A job 
+is returned when a coroutine is started (e.g. by launch). This job can be used to cancel the coroutine later or to check its status.
+
+Coroutine Scopes: 
+```sh
+# GlobalScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
+fun fetchData() {
+    GlobalScope.launch {
+        // Long-running operation
+        val data = fetchDataFromNetwork()
+        println("Data fetched: $data")
+    }
+}
+suspend fun fetchDataFromNetwork(): String {
+    // Simulate network call
+    delay(2000)
+    return "Network Data"
+}
+# CoroutineScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class MyViewModel : ViewModel() {
+
+private val viewModelScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+
+fun fetchData() {
+        viewModelScope.launch {
+            val data = fetchDataFromNetwork()
+            println("Data fetched: $data")
+        }
+    }
+
+override fun onCleared() {
+        super.onCleared()
+        viewModelScope.cancel()
+    }
+
+suspend fun fetchDataFromNetwork(): String {
+        return withContext(Dispatchers.IO) {
+            // Simulate network call
+            delay(2000)
+            "Network Data"
+        }
+    }
+}
+```
+- GlobalScope: is a global scope that launches top-level coroutines that are not bound to any specific lifecycle / view and run independently. 
+They are long-running and live until the application is terminated execution is completed.
+  - Unbounded Lifespan: continue to run until application terminates
+  - Not tied to lifecycle: ideal for long-running operations that need to continue regardless of the current scope or lifecycle
+  - Resource Management: can lead to potential memory leaks if not managed carefully
+- CoroutineScope: provides a structured way to manage coroutines, ensuring that they respect the lifecycle of the scope they are launched in.
+It is tied to a lifecycle, such as an Activity or ViewModel and ensures coroutines are cancelled when the lifecycle is destroyed.
+  - Lifecycle-aware: automatically cancelled / destroyed when scope is destroyed
+  - Structured concurrency: ensures coroutines are properly managed and exceptions are propagated
+  - Resource management: helps prevent memory leaks by cancelling coroutines when they are no longer needed
 
 ### ViewModels
 ViewModel is a class that exposes the state of the user interface and encapsulates the associated

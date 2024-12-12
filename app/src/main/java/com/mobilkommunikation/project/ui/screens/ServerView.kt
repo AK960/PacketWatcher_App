@@ -33,8 +33,6 @@ fun PacketWatcherServerView() {
     var errorMessage by rememberSaveable { mutableStateOf("") }
     var tcpServerStatus by rememberSaveable { mutableStateOf("Start") }
     var udpServerStatus by rememberSaveable { mutableStateOf("Start") }
-    var messages by rememberSaveable { mutableStateOf(listOf<String>()) }
-        // TODO: Implement logic to output messages on Screen
 
     Column(
         modifier = Modifier
@@ -57,8 +55,7 @@ fun PacketWatcherServerView() {
                         if (tcpServerStatus == "Start") {
                             handleStartServerInteraction(
                                 portNumber = actualPortNumber,
-                                protocolSelected = option,
-                                serverStatus = tcpServerStatus
+                                protocolSelected = option
                             )
                             tcpServerStatus = "Stop"
                             errorMessage = ""
@@ -76,8 +73,7 @@ fun PacketWatcherServerView() {
                         if (udpServerStatus == "Start") {
                             handleStartServerInteraction(
                                 portNumber = actualPortNumber,
-                                protocolSelected = option,
-                                serverStatus = udpServerStatus
+                                protocolSelected = option
                             )
                             udpServerStatus = "Stop"
                             errorMessage = ""

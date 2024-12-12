@@ -23,16 +23,19 @@ fun handleSendButtonInteraction(
     }
 }
 
-fun handleStartServerInteraction(
+suspend fun handleStartServerInteraction(
     portNumber: Int,
-    serverStatus: String,
     protocolSelected: String
 ) {
     myLog(msg = "handleStartServerInteraction: $protocolSelected-Protocol selected")
     myLog(type = "debug", msg = "handleStartServerInteraction: Calling server from thread ${Thread.currentThread().name}.")
     when (protocolSelected) {
-        "TCP" -> tcpServerJob = startTcpServer(portNumber = portNumber)
-        "UDP" -> udpServerJob = startUdpServer(portNumber = portNumber)
+        "TCP" -> tcpServerJob = startTcpServer(portNumber = portNumber) { _, message ->
+            //TODO: Implement logic for returning messages to UI
+        }
+        "UDP" -> udpServerJob = startUdpServer(portNumber = portNumber) { _, message ->
+            //TODO: Implement logic for returning messages to UI
+        }
     }
 }
 
