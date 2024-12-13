@@ -1,6 +1,6 @@
 package com.mobilkommunikation.project.utils
 
-import com.mobilkommunikation.project.service.tcp.setupTransmission
+import com.mobilkommunikation.project.service.tcp.startTcpClient
 import com.mobilkommunikation.project.service.tcp.startTcpServer
 import com.mobilkommunikation.project.service.udp.startUdpServer
 import kotlinx.coroutines.Job
@@ -16,24 +16,24 @@ fun handleSendButtonInteraction(
 ) {
     if (protocolSelected == "TCP") {
         myLog(msg = "clientButtonHandler: $protocolSelected-Protocol selected")
-        setupTransmission(ipAddress, portNumber, tcpMessage, protocolSelected)
+        startTcpClient(ipAddress, portNumber, tcpMessage, protocolSelected)
     } else {
         myLog(msg = "clientButtonHandler: $protocolSelected-Protocol selected")
-        setupTransmission(ipAddress, portNumber, tcpMessage, protocolSelected)
+        startTcpClient(ipAddress, portNumber, tcpMessage, protocolSelected)
     }
 }
 
-suspend fun handleStartServerInteraction(
+fun handleStartServerInteraction(
     portNumber: Int,
     protocolSelected: String
 ) {
     myLog(msg = "handleStartServerInteraction: $protocolSelected-Protocol selected")
     myLog(type = "debug", msg = "handleStartServerInteraction: Calling server from thread ${Thread.currentThread().name}.")
     when (protocolSelected) {
-        "TCP" -> tcpServerJob = startTcpServer(portNumber = portNumber) { _, message ->
+        "TCP" -> tcpServerJob = startTcpServer(portNumber = portNumber) { _, _ ->
             //TODO: Implement logic for returning messages to UI
         }
-        "UDP" -> udpServerJob = startUdpServer(portNumber = portNumber) { _, message ->
+        "UDP" -> udpServerJob = startUdpServer(portNumber = portNumber) { _, _ ->
             //TODO: Implement logic for returning messages to UI
         }
     }
