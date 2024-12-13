@@ -1,22 +1,9 @@
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/AK960/PacketWatcher_App">
-    <img src="app/src/main/res/drawable/logo.webp" alt="Logo" width="80" height="80">
-  </a>
-
 <h3 align="center">KTR - Mobile Communication - Packet Watcher App</h3>
 
-  <p align="center">
-      As there where some issues with my LaTeX installation, the report of this Assignment was noted down in the Readme.md for the time being. 
-      <!-- ### TODO: ADD PROJECT DESCRIPTION ### -->
-    <br />
-    <a href="https://github.com/AK960/PacketWatcher_App"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-  </p>
-</div>
-
+<br />
+  <a href="https://github.com/AK960/PacketWatcher_App"><strong>Explore the docs »</strong></a>
+<br />
+<br />
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -29,7 +16,7 @@
 </details>
 
 ## Report
-In the followiing, I documented the process and status of the PacketWatcherApp-Project from this <a href="https://github.com/AK960/PacketWatcher_App.git">GitHub-Repo</a>. The goal was to design an Android Application that can send and receive TCP and UDP Packets. Additionally, I also used this Readme.md file to take personal notes on the topics that were subject of this project.
+In the following, I documented the process and status of the PacketWatcherApp-Project from this <a href="https://github.com/AK960/PacketWatcher_App.git">GitHub-Repo</a>. The goal was to design an Android Application that can send and receive TCP and UDP Packets. Additionally, I also used this Readme.md file to take personal notes on the topics that were subject of this project.
 
 #### Directory structure  
 The MainActivity.kt file lies under app/src/main/java/com/mobilkommunikation/project and calls on the package ./ui/screens which contains two files to render the screen. Within these files, the ./ui/components package is called which holds the elements that are contained inside of the scaffold, designed in the MainActivity. The package ./controllers contains the Kotlin files that hold the logical functions that implement the client and server functions. 
@@ -39,10 +26,10 @@ As said before, a Scaffold was designed which creates a topBar without further f
 The Client-View contains a SegmentedControl field, that lets the user choose between the two protocols "TCP" and "UDP" to send a message to the server. The inputFields provide the interaction possibility to enter a message and the endpoint it is supposed to be send to. By interaction with the button below, the packet is transmitted and shall be shown in the outputField below. The Server-View works analogous. 
 
 #### Logic
-The interaction components provide the input options for the user to set up the desired connection. When interacting with the buttons to start a service, first the IP-Address and Portnumber are checked regarding validity. When the check fails, an error message is shown on the screen. On success, the values are passed to the intended handlers, which perform case distinctions and pass on the values to the designated functions. 
+The interaction components provide the input options for the user to set up the desired connection. When interacting with the buttons to start a service, first the IP-Address and port number are checked regarding validity. When the check fails, an error message is shown on the screen. On success, the values are passed to the intended handlers, which perform case distinctions and pass on the values to the designated functions. 
 
 #### Status Quo
-In the following Notes section, the status quo of the project is noted down, formulating futher to-dos and requirements. Also, the major bugs are listed as some notes regarding important variables and examplatory functions.  
+In the following Notes section, the status quo of the project is noted down, formulating further to-dos and requirements. Also, the major bugs are listed as some notes regarding important variables and example functions.  
 
 ## Notes
 ### States and important Variables
@@ -59,7 +46,7 @@ In the following Notes section, the status quo of the project is noted down, for
 #### Choosing Transmission Type based on State Variable
   - onProtocolSelected: (String) -> Unit
     - onProtocolSelected --> Name of the parameter, represents a function that is called later
-    - (String) --> Strigit sng is passed to the Lambda-Function, which contains selected protocol
+    - (String) --> String is passed to the Lambda-Function, which contains selected protocol
       - Variable selectedProtocolStateIndex = it (it from if-statement) is passed ("TCP" or "UDP")
     - Unit --> Function does not return a value (synonym to void)
   - Function expects Lambda-Function as argument that passes some behavior/logic to the function
@@ -75,14 +62,14 @@ In the following Notes section, the status quo of the project is noted down, for
 ### Must <!-- Critical, must be delivered for project success -->
 - Implement Client Functions
 - Implement Server Logic
-- Output In- and Outstream of sockets in LogCat
-- Output of communication endoint in LogCat
-- Output Log Messages regarding Server Socket, especially bounded portnumber
+- Output In- and Output stream of sockets in LogCat
+- Output of communication end point in LogCat
+- Output Log Messages regarding Server Socket, especially bounded port number
 - Outsourcing of socket.accept() off the main thread
 - Timeout to close server socket if no request comes in 
 
 ### Should <!-- Important but less time critial, can be implemented later --> 
-- Output In- and Outstream of sockets in output Field
+- Output on- and output stream of sockets in output Field
 - Change button content if server is running (state variable)
 - Making outputFields scrollable
 - Coping with screen rotation 
@@ -94,8 +81,6 @@ In the following Notes section, the status quo of the project is noted down, for
 ## Bugs
 - Not possible to interact with app running on android studio emulator
 - Enabling scrollable content resulted in app breakdown
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Theory Notes - General Programming
 ### Lambda Functions
@@ -158,7 +143,6 @@ fun add(a: Int, b: Int): Int {
 # Lambda
 val add = { a: Int, b: Int -> a + b }
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Sockets
 Sockets are connection endpoints which relay traffic between client- and server-processes. For that, they are identified by the combination of IP address and port number.
@@ -266,7 +250,7 @@ fun OnboardingScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Welcome to the Basics Codelab!")
+        Text("Welcome to the Basics Code Lab!")
         Button(
             modifier = Modifier
                 .padding(vertical = 24.dp),
@@ -279,7 +263,6 @@ fun OnboardingScreen(
     }
 }
 ```
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Coroutines
 Coroutines are design patterns in Kotlin, equivalent to threads in Java, for handling asynchronous tasks. By sourcing out activities to 
