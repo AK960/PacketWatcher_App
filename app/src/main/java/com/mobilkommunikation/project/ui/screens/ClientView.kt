@@ -1,5 +1,6 @@
 package com.mobilkommunikation.project.ui.screens
 
+import MessageViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ fun PacketWatcherClientView (
     var tcpMessage by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
+    val viewModel = MessageViewModel()
 
     Column (
         modifier = Modifier
@@ -65,7 +67,8 @@ fun PacketWatcherClientView (
                     ipAddress = ipAddress,
                     portNumber = portNumber.toInt(),
                     tcpMessage = tcpMessage,
-                    protocolSelected = selectedProtocolStateIndex
+                    protocolSelected = selectedProtocolStateIndex,
+                    viewModel = viewModel
                 )
                 errorMessage = ""
                 myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to connect to $ipAddress:$portNumber")

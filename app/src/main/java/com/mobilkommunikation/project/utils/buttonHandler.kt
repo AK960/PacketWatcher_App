@@ -1,7 +1,6 @@
 package com.mobilkommunikation.project.utils
 
 import MessageViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobilkommunikation.project.service.tcp.startTcpClient
 import com.mobilkommunikation.project.service.tcp.startTcpServer
 import com.mobilkommunikation.project.service.udp.startUdpClient
@@ -11,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-val viewModel: MessageViewModel = viewModel()
 var tcpServerJob: Job? = null
 var udpServerJob: Job? = null
 
@@ -19,7 +17,8 @@ fun handleStartClientInteraction(
     ipAddress: String,
     portNumber: Int,
     tcpMessage: String,
-    protocolSelected: String
+    protocolSelected: String,
+    viewModel: MessageViewModel
 ) {
     myLog(type = "debug", msg = "handleStartClientInteraction: Calling $protocolSelected-Client from thread ${Thread.currentThread().name}.")
 
@@ -38,7 +37,8 @@ fun handleStartClientInteraction(
 
 fun handleStartServerInteraction(
     portNumber: Int,
-    protocolSelected: String
+    protocolSelected: String,
+    viewModel: MessageViewModel
 ) {
     myLog(type = "debug", msg = "handleStartServerInteraction: Calling $protocolSelected-Server from thread ${Thread.currentThread().name}.")
     when (protocolSelected) {

@@ -70,7 +70,8 @@ fun PacketWatcherServerView() {
                         if (tcpServerStatus == "Start") {
                             handleStartServerInteraction(
                                 portNumber = actualPortNumber,
-                                protocolSelected = option
+                                protocolSelected = option,
+                                viewModel = viewModel
                             )
                             tcpServerStatus = "Stop"
                             errorMessage = ""
@@ -88,7 +89,8 @@ fun PacketWatcherServerView() {
                         if (udpServerStatus == "Start") {
                             handleStartServerInteraction(
                                 portNumber = actualPortNumber,
-                                protocolSelected = option
+                                protocolSelected = option,
+                                viewModel = viewModel
                             )
                             udpServerStatus = "Stop"
                             errorMessage = ""
