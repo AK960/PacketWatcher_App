@@ -1,5 +1,7 @@
 package com.mobilkommunikation.project.utils
 
+import MessageViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobilkommunikation.project.service.tcp.startTcpClient
 import com.mobilkommunikation.project.service.tcp.startTcpServer
 import com.mobilkommunikation.project.service.udp.startUdpClient
@@ -9,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
+val viewModel: MessageViewModel = viewModel()
 var tcpServerJob: Job? = null
 var udpServerJob: Job? = null
 
@@ -23,11 +26,11 @@ fun handleStartClientInteraction(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
     coroutineScope.launch {
         when (protocolSelected) {
-            "TCP" -> startTcpClient(ipAddress, portNumber, tcpMessage) { _, _ ->
-                //TODO: Implement logic for returning messages to UI
+            "TCP" -> startTcpClient(ipAddress, portNumber, tcpMessage) { client, message ->
+                viewModel.addMessage(client, message)
             }
-            "UDP" -> startUdpClient(ipAddress, portNumber, tcpMessage) { _, _ ->
-                //TODO: Implement logic for returning messages to UI
+            "UDP" -> startUdpClient(ipAddress, portNumber, tcpMessage) { client, message ->
+                viewModel.addMessage(client, message)
             }
         }
     }
@@ -39,11 +42,11 @@ fun handleStartServerInteraction(
 ) {
     myLog(type = "debug", msg = "handleStartServerInteraction: Calling $protocolSelected-Server from thread ${Thread.currentThread().name}.")
     when (protocolSelected) {
-        "TCP" -> tcpServerJob = startTcpServer(portNumber = portNumber) { _, _ ->
-            //TODO: Implement logic for returning messages to UI
+        "TCP" -> tcpServerJob = startTcpServer(portNumber = portNumber) { client, message ->
+            viewModel.addMessage(client, message)
         }
-        "UDP" -> udpServerJob = startUdpServer(portNumber = portNumber) { _, _ ->
-            //TODO: Implement logic for returning messages to UI
+        "UDP" -> udpServerJob = startUdpServer(portNumber = portNumber) { client, message ->
+            viewModel.addMessage(client, message)
         }
     }
 }
