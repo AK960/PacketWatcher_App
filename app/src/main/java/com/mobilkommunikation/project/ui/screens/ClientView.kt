@@ -12,19 +12,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.mobilkommunikation.project.utils.handleSendButtonInteraction
-import com.mobilkommunikation.project.utils.isValidIpAddress
-import com.mobilkommunikation.project.utils.isValidPortNumber
-import com.mobilkommunikation.project.utils.myLog
 import com.mobilkommunikation.project.ui.components.InputFields
 import com.mobilkommunikation.project.ui.components.OutputField
 import com.mobilkommunikation.project.ui.components.SegmentedControl
 import com.mobilkommunikation.project.ui.components.SendButton
+import com.mobilkommunikation.project.utils.handleStartClientInteraction
+import com.mobilkommunikation.project.utils.isValidIpAddress
+import com.mobilkommunikation.project.utils.isValidPortNumber
+import com.mobilkommunikation.project.utils.myLog
 
 @Composable
 fun PacketWatcherClientView (
@@ -36,6 +37,7 @@ fun PacketWatcherClientView (
     var portNumber by rememberSaveable { mutableStateOf("") }
     var tcpMessage by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
 
     Column (
         modifier = Modifier
@@ -59,9 +61,9 @@ fun PacketWatcherClientView (
         Spacer(modifier = Modifier.height(16.dp))
         SendButton {
             if (isValidIpAddress(ipAddress) && isValidPortNumber(portNumber)) {
-                handleSendButtonInteraction(
+                handleStartClientInteraction(
                     ipAddress = ipAddress,
-                    portNumber = portNumber,
+                    portNumber = portNumber.toInt(),
                     tcpMessage = tcpMessage,
                     protocolSelected = selectedProtocolStateIndex
                 )

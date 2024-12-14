@@ -1,13 +1,17 @@
 package com.mobilkommunikation.project.service.tcp
 
 import com.mobilkommunikation.project.utils.myLog
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-fun startTcpClient(
+suspend fun startTcpClient(
     ipAddress: String,
-    portNumber: String,
+    portNumber: Int,
     tcpMessage: String,
-    protocolSelected: String
+    printOnUi: (String, String) -> Unit
 ) {
-    myLog(msg = "tcpClient: Establishing $protocolSelected-Connection to $ipAddress:$portNumber. Sending message: $tcpMessage")
+    return withContext(Dispatchers.IO){
+        myLog(msg = "tcpClient: Establishing TCP-connection to $ipAddress:$portNumber. Sending message: $tcpMessage")
+    }
     // TODO: Implement transmission logic here with flexible protocol parameter
 }

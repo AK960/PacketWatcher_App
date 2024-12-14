@@ -52,7 +52,8 @@ In the following Notes section, the status quo of the project is noted down, for
   - Function expects Lambda-Function as argument that passes some behavior/logic to the function
     - This is the term { selectedProtocolStateIndex = it }
       - it is the sole parameter of the function
-    - Makes the function flexible: The logic for the selection of the protocol does not need to be defined but is rather passed to the code by the calling code
+    - Makes the function flexible: The logic for the selection of the protocol does not need to be defined 
+    but is rather passed to the code by the calling code
   - Function calls the function SegmentedControl and passes the Lambda-Function as parameter
     - SegmentedControl expects Lambda-Function as argument for onOptionSelected
     - The onClick-function in SegmentedControl calls the lambda function on the current option
@@ -145,9 +146,16 @@ val add = { a: Int, b: Int -> a + b }
 ```
 
 ### Sockets
-Sockets are connection endpoints which relay traffic between client- and server-processes. For that, they are identified by the combination of IP address and port number.
-- Server Socket: To communicate with a server process, it must be possible to address it from the outside. Thus, it binds itself to a socket through which it can be accessed and listens for incoming connections. If it receives a connection it accepts it and blocks the process until the request comes in, reads it, processes it, and responds. Afterwards it waits for further requests until the clients closes the connection.
-- Client Socket: The client does not need a fixed port but rather is assigned a free one. It then connects to the server, transmitting its own connection details through which it can be reached again. After transmitting the request, it waits for the servers response and listens on the specified port. Receiving the response, it either sends another request of closes the connection.
+Sockets are connection endpoints which relay traffic between client- and server-processes. For that, they 
+are identified by the combination of IP address and port number.
+- Server Socket: To communicate with a server process, it must be possible to address it from the outside. 
+Thus, it binds itself to a socket through which it can be accessed and listens for incoming connections. If 
+it receives a connection it accepts it and blocks the process until the request comes in, reads it, processes 
+it, and responds. Afterwards it waits for further requests until the clients closes the connection.
+- Client Socket: The client does not need a fixed port but rather is assigned a free one. It then connects 
+to the server, transmitting its own connection details through which it can be reached again. After 
+transmitting the request, it waits for the servers response and listens on the specified port. Receiving 
+the response, it either sends another request of closes the connection.
 #### Connection Oriented (TCP)
 Connection oriented protocols establish a connection before exchanging data. The workflow is as follows: 
 ##### Server Side
@@ -318,9 +326,6 @@ is returned when a coroutine is started (e.g. by launch). This job can be used t
 Coroutine Scopes: 
 ```sh
 # GlobalScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-
 fun fetchData() {
     GlobalScope.launch {
         // Long-running operation
@@ -334,28 +339,40 @@ suspend fun fetchDataFromNetwork(): String {
     return "Network Data"
 }
 # CoroutineScope
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+## simple
+fun handleStartClientInteraction() {
+    val coroutineScope = CoroutineScope(Dispatchers.IO)
+    coroutineScope.launch {
+        when (protocolSelected) {
+            "TCP" -> startTcpClient(ipAddress, portNumber, tcpMessage)
+            "UDP" -> startUdpClient(ipAddress, portNumber, tcpMessage)
+        }
+    }
+}
 
+suspend fun startTcpClient() {
+    return withContext(Dispatchers.IO) {
+        println("Hello from TCP-Client")
+    }
+}
+
+## with Viewmodel
 class MyViewModel : ViewModel() {
+    private val viewModelScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
-private val viewModelScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-
-fun fetchData() {
+    fun fetchData() {
         viewModelScope.launch {
             val data = fetchDataFromNetwork()
             println("Data fetched: $data")
         }
     }
 
-override fun onCleared() {
+    override fun onCleared() {
         super.onCleared()
         viewModelScope.cancel()
     }
 
-suspend fun fetchDataFromNetwork(): String {
+    suspend fun fetchDataFromNetwork(): String {
         return withContext(Dispatchers.IO) {
             // Simulate network call
             delay(2000)
@@ -374,6 +391,8 @@ It is tied to a lifecycle, such as an Activity or ViewModel and ensures coroutin
   - Lifecycle-aware: automatically cancelled / destroyed when scope is destroyed
   - Structured concurrency: ensures coroutines are properly managed and exceptions are propagated
   - Resource management: helps prevent memory leaks by cancelling coroutines when they are no longer needed
+- runBlocking: While coroutineScope must be called from within another coroutine, runBlocking can launch a coroutine from outside an existing
+coroutine. The coroutine launched by runBlocking will block the current thread.
 
 ### ViewModels
 ViewModel is a class that exposes the state of the user interface and encapsulates the associated

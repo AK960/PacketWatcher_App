@@ -16,44 +16,54 @@ import java.net.DatagramSocket
 @OptIn(DelicateCoroutinesApi::class)
 fun startUdpServer(
     portNumber: Int = getAvailablePort(),
-    onMessageReceived: (message: String, String) -> Unit
+    printOnUi: (message: String, String) -> Unit
 ): Job {
     return GlobalScope.launch(Dispatchers.IO) {
         val socket = DatagramSocket(portNumber)
-        myLog(type = "debug", msg = "startUdpServer: UDP-Server is listening on port $portNumber in thread ${Thread.currentThread().name}.")
+        val serverAddress = socket.localAddress.hostAddress
+        myLog(type = "debug", msg = "udpServer: Server is listening on port $portNumber in thread ${Thread.currentThread().name}.")
 
         launch {
             while (isActive) {
                 delay(10000L)
-                myLog(type = "debug", msg = "startUdpServer: Server is still listening on port $portNumber in thread ${Thread.currentThread().name}.")
+                myLog(type = "debug", msg = "udpServer: Server is still listening on port $portNumber in thread ${Thread.currentThread().name}.")
             }
         }
 
         val buffer = ByteArray(1024)
         try {
             while (isActive) {
-                try {
-                    val packet = DatagramPacket(buffer, buffer.size)
-                    socket.receive(packet)
-                    val received = String(packet.data, 0, packet.length)
-                    myLog(msg = "udpServer: Received message: $received from ${packet.address}:${packet.port}")
+                launch {
+                    try {
+                        // Read Message and client details
+                        val udpPacket = DatagramPacket(buffer, buffer.size)
+                        socket.receive(udpPacket)
+                        val clientMessage = String(udpPacket.data, 0, udpPacket.length)
 
-                    // Display the received message in the output field
-                    withContext(Dispatchers.Main) {
-                        updateOutputField("Received: $received from ${packet.address}:${packet.port}")
-                    }
+                        // Get details
+                        val clientAddress = udpPacket.address.hostAddress
+                        myLog(msg = "udpServer: Received message from client $clientAddress: $clientMessage")
 
-                    // Respond to the received message
-                    launch {
-                        val response = "Message received!"
-                        val responsePacket = DatagramPacket(response.toByteArray(), response.length, packet.address, packet.port)
+                        // Process Message
+                        val serverMessage = "UDP-Server $serverAddress: Message received and processed."
+
+                        // Return to UI
+                        withContext(Dispatchers.Main) {
+                            printOnUi("UDP-Client: $clientAddress", "Message: $clientMessage")
+                        }
+
+                        // Respond to Client
+                        val response = serverMessage.toByteArray()
+                        val responsePacket = DatagramPacket(response, response.size, udpPacket.address, udpPacket.port)
                         socket.send(responsePacket)
-                        myLog(msg = "udpServer: Sent response: $response to ${packet.address}:${packet.port}")
+                        myLog(msg = "udpServer: Sent response to client $clientAddress")
+                    } catch (e: Exception) {
+                        myLog(type = "error", msg = "udpServer: Error receiving packet: ${e.message}")
+                        e.printStackTrace()
+                    } finally {
+                        socket.close()
+                        myLog(msg = "udpServer: Client socket closed.")
                     }
-
-                } catch (e: Exception) {
-                    myLog(type = "error", msg = "udpServer: Error receiving packet: ${e.message}")
-                    e.printStackTrace()
                 }
             }
         } catch (e: Exception) {
@@ -64,10 +74,4 @@ fun startUdpServer(
             myLog(msg = "udpServer: Datagram socket closed.")
         }
     }
-}
-
-// Placeholder function to update the output field
-fun updateOutputField(message: String) {
-    // Implement the logic to update the output field in your UI
-    myLog(msg = "updateOutputField: $message")
 }
