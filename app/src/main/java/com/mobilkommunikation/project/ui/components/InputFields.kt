@@ -1,8 +1,10 @@
 package com.mobilkommunikation.project.ui.components
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -22,31 +24,45 @@ fun InputFields(
     Row(modifier = Modifier.fillMaxWidth()) {
         TextField(
             value = ipAddress,
-            onValueChange = onIpAddressChange,
+            onValueChange = {
+                myLog(type = "debug", msg = "Input Fields: IP-Address changed to $it")
+                onIpAddressChange(it)
+            },
             label = { Text("IP-Address") },
+            keyboardOptions = KeyboardOptions.Default,
             modifier = Modifier
                 .weight(1f)
                 .padding(4.dp)
+                .focusable(true)
         )
         TextField(
             value = portNumber,
-            onValueChange = onPortNumberChange,
+            onValueChange = {
+                onPortNumberChange(it)
+                myLog(type = "debug", msg = "Input Fields: Port number changed to $it")
+            },
             label = { Text("Port Nr.") },
-            // keyboardOptions = KeyboardOptions = KeyboardOptions.Default,
+            keyboardOptions = KeyboardOptions.Default,
             modifier = Modifier
                 .weight(1f)
                 .padding(4.dp)
+                .focusable(true)
         )
         myLog(msg = "Input Fields: Chosen connection parameters: $ipAddress:$portNumber")
     }
     Row (modifier = Modifier.fillMaxWidth()) {
         TextField(
             value = tcpMessage,
-            onValueChange = onTcpMessageChange,
-            label = { Text("Payload") },
+            onValueChange = {
+                myLog(msg = "Input Fields: Message changed to '$it'")
+                onTcpMessageChange(it)
+            },
+            label = { Text("Message") },
+            keyboardOptions = KeyboardOptions.Default,
             modifier = Modifier
                 .weight(1f)
                 .padding(4.dp)
+                .focusable(true)
         )
 }
 }

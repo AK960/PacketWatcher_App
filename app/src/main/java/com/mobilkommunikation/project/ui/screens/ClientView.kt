@@ -52,11 +52,11 @@ fun PacketWatcherClientView (
         )
         Spacer(modifier = Modifier.height(16.dp))
         InputFields(
-            ipAddress = "",
+            ipAddress = ipAddress,
             onIpAddressChange = { ipAddress = it },
-            portNumber = "",
+            portNumber = portNumber,
             onPortNumberChange = { portNumber = it },
-            tcpMessage = "",
+            tcpMessage = tcpMessage,
             onTcpMessageChange = { tcpMessage = it }
         )
         Spacer(modifier = Modifier.height(16.dp))
