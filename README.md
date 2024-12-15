@@ -61,27 +61,18 @@ In the following Notes section, the status quo of the project is noted down, for
 
 ## To-Dos
 ### Must <!-- Critical, must be delivered for project success -->
-- Implement Client Functions
-- Implement Server Logic
-- Output In- and Output stream of sockets in LogCat
-- Output of communication end point in LogCat
-- Output Log Messages regarding Server Socket, especially bounded port number
-- Outsourcing of socket.accept() off the main thread
-- Timeout to close server socket if no request comes in 
+- Test Communication with external client / server
+- Update Assignment Report
 
 ### Should <!-- Important but less time critial, can be implemented later --> 
-- Output on- and output stream of sockets in output Field
-- Change button content if server is running (state variable)
-- Making outputFields scrollable
-- Coping with screen rotation 
+- Erase label from input field after using it without loosing ability to stop server -> value as state variable in viewmodel? 
+- Update Readme
 
 ### Could <!-- Desirable but not critical -->
 - Changing App Theme & Colors
-- Adding ViewModels for app composition
 
 ## Bugs
-- Not possible to interact with app running on android studio emulator
-- Enabling scrollable content resulted in app breakdown
+- Not yet known
 
 ## Theory Notes - General Programming
 ### Lambda Functions
