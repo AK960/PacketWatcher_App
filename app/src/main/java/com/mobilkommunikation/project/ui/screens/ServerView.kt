@@ -88,7 +88,7 @@ fun PacketWatcherServerView() {
                     }
                     portNumber = ""
                 } else {
-                    errorMessage = "Invalid Port Number. Choose from [1024, 65535]"
+                    errorMessage = "Invalid Port Number. Choose Port from [1024, 65535]"
                     myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
                 }
             },

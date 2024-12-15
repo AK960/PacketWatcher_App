@@ -72,9 +72,13 @@ fun PacketWatcherClientView (
                 errorMessage = ""
                 myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to connect to $ipAddress:$portNumber")
             } else {
-                errorMessage = "Input Error: Invalid IP address or port number"
+                errorMessage = "Invalid IP address or port number. Choose Port from [1024, 65535]."
                 myLog(type = "error", msg = "PacketWatcherClientView: $errorMessage")
             }
+            // Reset input fields
+            ipAddress = ""
+            portNumber = ""
+            tcpMessage = ""
         }
         if (errorMessage.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
