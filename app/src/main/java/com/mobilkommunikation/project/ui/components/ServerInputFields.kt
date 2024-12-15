@@ -14,16 +14,15 @@ import com.mobilkommunikation.project.utils.myLog
 
 @Composable
 fun ServerInputFields(
-    portNumber: Int,
-    onPortNumberChange: (Int) -> Unit,
+    portNumber: String,
+    onPortNumberChange: (String) -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         TextField(
-            value = portNumber.toString(),
-            onValueChange = { newValue ->
-                val intValue = newValue.toIntOrNull() ?: portNumber
-                onPortNumberChange(intValue)
-                myLog(msg = "ServerInputFields: Port number changed to $intValue")
+            value = portNumber,
+            onValueChange = {
+                onPortNumberChange(it)
+                myLog(type = "debug", msg = "Input Fields: Port number changed to $it")
             },
             label = { Text("Port Number") },
             modifier = Modifier
