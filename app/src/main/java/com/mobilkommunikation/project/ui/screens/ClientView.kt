@@ -1,6 +1,6 @@
 package com.mobilkommunikation.project.ui.screens
 
-import MessageViewModel
+import com.mobilkommunikation.project.model.MessageViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

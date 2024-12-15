@@ -1,9 +1,8 @@
 package com.mobilkommunikation.project.service.tcp
 
 import com.mobilkommunikation.project.utils.myLog
-import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -13,18 +12,18 @@ import java.io.IOException
 import java.net.ServerSocket
 import java.net.Socket
 
-@OptIn(DelicateCoroutinesApi::class)
 fun startTcpServer (
     portNumber: Int,
+    scope: CoroutineScope,
     printOnUi: (message: String, String) -> Unit
 ): Job {
-    return GlobalScope.launch(Dispatchers.IO) {
+    return scope.launch(Dispatchers.IO) {
         try {
             // Create Socket
             val serverSocket = ServerSocket(portNumber)
 
             // Logging
-            withContext(Dispatchers.Main) { printOnUi("TCP-Server", "Server listening on port ::$portNumber") }
+            withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Server listening on port ::$portNumber") }
             myLog(type = "debug", msg = "tcpServer: Server started on port $portNumber in thread ${Thread.currentThread().name}.")
             while (isActive) {
                 delay(5000L)

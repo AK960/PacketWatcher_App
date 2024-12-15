@@ -2,9 +2,8 @@ package com.mobilkommunikation.project.service.udp
 
 import com.mobilkommunikation.project.utils.getAvailablePort
 import com.mobilkommunikation.project.utils.myLog
-import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -13,18 +12,18 @@ import kotlinx.coroutines.withContext
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 
-@OptIn(DelicateCoroutinesApi::class)
 fun startUdpServer(
     portNumber: Int = getAvailablePort(),
+    scope: CoroutineScope,
     printOnUi: (message: String, String) -> Unit
 ): Job {
-    return GlobalScope.launch(Dispatchers.IO) {
+    return scope.launch(Dispatchers.IO) {
         try {
             // Create Socket
             val socket = DatagramSocket(portNumber)
 
             // Logging
-            withContext(Dispatchers.Main) { printOnUi("UDP-Server", "Server listening on port ::$portNumber") }
+            withContext(Dispatchers.Main) { printOnUi("[UDP-Server]", "Server listening on port ::$portNumber") }
             myLog(type = "debug", msg = "udpServer: Server is listening on port $portNumber in thread ${Thread.currentThread().name}.")
             launch {
                 while (isActive) {

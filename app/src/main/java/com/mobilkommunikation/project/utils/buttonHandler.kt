@@ -1,17 +1,11 @@
 package com.mobilkommunikation.project.utils
 
-import MessageViewModel
+import com.mobilkommunikation.project.model.MessageViewModel
 import com.mobilkommunikation.project.service.tcp.startTcpClient
-import com.mobilkommunikation.project.service.tcp.startTcpServer
 import com.mobilkommunikation.project.service.udp.startUdpClient
-import com.mobilkommunikation.project.service.udp.startUdpServer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-
-var tcpServerJob: Job? = null
-var udpServerJob: Job? = null
 
 fun handleStartClientInteraction(
     ipAddress: String,
@@ -34,6 +28,10 @@ fun handleStartClientInteraction(
         }
     }
 }
+
+/*
+var tcpServerJob: Job? = null
+var udpServerJob: Job? = null
 
 fun handleStartServerInteraction(
     portNumber: Int,
@@ -70,3 +68,4 @@ fun handleStopServerInteraction(
         }
     }
 }
+*/
