@@ -19,59 +19,54 @@ fun startUdpServer(
     printOnUi: (message: String, String) -> Unit
 ): Job {
     return GlobalScope.launch(Dispatchers.IO) {
-        val socket = DatagramSocket(portNumber)
-        val serverAddress = socket.localAddress.hostAddress
-        myLog(type = "debug", msg = "udpServer: Server is listening on port $portNumber in thread ${Thread.currentThread().name}.")
-
-        launch {
-            while (isActive) {
-                delay(10000L)
-                myLog(type = "debug", msg = "udpServer: Server is still listening on port $portNumber in thread ${Thread.currentThread().name}.")
-            }
-        }
-
-        val buffer = ByteArray(1024)
         try {
-            while (isActive) {
-                launch {
-                    try {
-                        // Read Message and client details
-                        val udpPacket = DatagramPacket(buffer, buffer.size)
-                        socket.receive(udpPacket)
-                        val clientMessage = String(udpPacket.data, 0, udpPacket.length)
+            // Create Socket
+            val socket = DatagramSocket(portNumber)
 
-                        // Get details
-                        val clientAddress = udpPacket.address.hostAddress
-                        myLog(msg = "udpServer: Received message from client $clientAddress: $clientMessage")
-
-                        // Process Message
-                        val serverMessage = "UDP-Server $serverAddress: Message received and processed."
-
-                        // Return to UI
-                        withContext(Dispatchers.Main) {
-                            printOnUi("UDP-Client: $clientAddress", "Message: $clientMessage")
-                        }
-
-                        // Respond to Client
-                        val response = serverMessage.toByteArray()
-                        val responsePacket = DatagramPacket(response, response.size, udpPacket.address, udpPacket.port)
-                        socket.send(responsePacket)
-                        myLog(msg = "udpServer: Sent response to client $clientAddress")
-                    } catch (e: Exception) {
-                        myLog(type = "error", msg = "udpServer: Error receiving packet: ${e.message}")
-                        e.printStackTrace()
-                    } finally {
-                        socket.close()
-                        myLog(msg = "udpServer: Client socket closed.")
-                    }
+            // Logging
+            withContext(Dispatchers.Main) { printOnUi("UDP-Server", "Server listening on port ::$portNumber") }
+            myLog(type = "debug", msg = "udpServer: Server is listening on port $portNumber in thread ${Thread.currentThread().name}.")
+            launch {
+                while (isActive) {
+                    delay(10000L)
+                    myLog(type = "debug", msg = "udpServer: Server is still listening on port $portNumber in thread ${Thread.currentThread().name}.")
                 }
             }
+
+            val buffer = ByteArray(1024)
+            try {
+                // Start Server
+                while (true) {
+                    // Read Message
+                    val udpPacket = DatagramPacket(buffer, buffer.size)
+                    socket.receive(udpPacket)
+                    val clientMessage = String(udpPacket.data, 0, udpPacket.length)
+                    val clientAddress = udpPacket.address.hostAddress
+
+                    // Acknowledge Message
+                    val serverMessage = "UDP-Server: Message acknowledged."
+
+                    // Return to UI
+                    withContext(Dispatchers.Main) { printOnUi("UDP-Client: $clientAddress", "Message: $clientMessage") }
+
+                    // Respond to Client
+                    val response = serverMessage.toByteArray()
+                    val responsePacket = DatagramPacket(response, response.size, udpPacket.address, udpPacket.port)
+                    socket.send(responsePacket)
+                    myLog(msg = "udpServer: Sent response to client $clientAddress")
+                }
+            } catch (e: Exception) {
+                myLog(type = "error", msg = "udpServer: Failed to start server. Exit with error: ${e.message}")
+                e.printStackTrace()
+            } finally {
+                socket.close()
+                withContext(Dispatchers.Main) { printOnUi("UDP-Server", "Datagram-Socket closed.") }
+            }
         } catch (e: Exception) {
-            myLog(type = "error", msg = "udpServer: General error: ${e.message}")
+            myLog(type = "error", msg = "udpServer: Failed to create socket. Exit with error: ${e.message}")
             e.printStackTrace()
         } finally {
-            socket.close()
-            myLog(msg = "udpServer: Datagram socket closed.")
+            withContext(Dispatchers.Main) { printOnUi("UDP-Server", "Server stopped.") }
         }
     }
 }

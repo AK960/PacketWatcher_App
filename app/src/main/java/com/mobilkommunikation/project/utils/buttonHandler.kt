@@ -52,16 +52,21 @@ fun handleStartServerInteraction(
 }
 
 fun handleStopServerInteraction(
-    protocolSelected: String
+    protocolSelected: String,
+    viewModel: MessageViewModel
 ) {
     when (protocolSelected) {
         "TCP" -> {
             tcpServerJob?.cancel()
+            tcpServerJob = null
             myLog(msg = "handleStopServerInteraction: TCP Server stopped.")
+            viewModel.addMessage("TCP-Server", "Server stopped.")
         }
         "UDP" -> {
             udpServerJob?.cancel()
+            udpServerJob = null
             myLog(msg = "handleStopServerInteraction: UDP Server stopped.")
+            viewModel.addMessage("UDP-Server", "Server stopped.")
         }
     }
 }

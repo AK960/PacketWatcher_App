@@ -78,7 +78,8 @@ fun PacketWatcherServerView() {
                             myLog(msg = "PacketWatcherServerView: Trying to start $option Server on port $actualPortNumber")
                         } else {
                             handleStopServerInteraction(
-                                protocolSelected = option
+                                protocolSelected = option,
+                                viewModel = viewModel
                             )
                             tcpServerStatus = "Start"
                             errorMessage = ""
@@ -97,7 +98,8 @@ fun PacketWatcherServerView() {
                             myLog(msg = "PacketWatcherServerView: Trying to start $option Server on port $actualPortNumber")
                         } else {
                             handleStopServerInteraction(
-                                protocolSelected = option
+                                protocolSelected = option,
+                                viewModel = viewModel
                             )
                             udpServerStatus = "Start"
                             errorMessage = ""
