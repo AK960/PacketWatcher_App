@@ -27,7 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mobilkommunikation.project.model.MessageViewModel
+import com.mobilkommunikation.project.model.ServerViewModel
 import com.mobilkommunikation.project.ui.components.ServerButtons
 import com.mobilkommunikation.project.ui.components.ServerInputFields
 import com.mobilkommunikation.project.utils.getAvailablePort
@@ -38,14 +38,14 @@ import com.mobilkommunikation.project.utils.myLog
 fun PacketWatcherServerView() {
     myLog(msg = "PacketWatcherServerView: Rendering Server View")
     // Viewmodel
-    val viewModel: MessageViewModel = viewModel()
+    val viewModel: ServerViewModel = viewModel()
     val messages by viewModel.messages.collectAsState()
+    val tcpServerRunning by viewModel.tcpServerRunning.collectAsState()
+    val udpServerRunning by viewModel.udpServerRunning.collectAsState()
 
     // States
     var portNumber by rememberSaveable { mutableIntStateOf(0) }
     var errorMessage by rememberSaveable { mutableStateOf("") }
-    var tcpServerStatus by rememberSaveable { mutableStateOf("Start") }
-    var udpServerStatus by rememberSaveable { mutableStateOf("Start") }
 
     Column(
         modifier = Modifier
@@ -59,80 +59,33 @@ fun PacketWatcherServerView() {
         Spacer(modifier = Modifier.height(16.dp))
 
         ServerButtons(
-            tcpServerStatus = tcpServerStatus,
-            udpServerStatus = udpServerStatus,
+            tcpServerStatus = if (tcpServerRunning) "Stop" else "Start",
+            udpServerStatus = if (udpServerRunning) "Stop" else "Start",
             onClick = { option ->
                 val actualPortNumber = if (portNumber == 0) getAvailablePort() else portNumber
                 when (option) {
                     "TCP" -> {
-                        if (tcpServerStatus == "Start") {
-                            viewModel.startTcpServerView(actualPortNumber)
-                            tcpServerStatus = "Stop"
-                            errorMessage = ""
-                            myLog(msg = "PacketWatcherServerView: Trying to start $option Server on port $actualPortNumber")
-                        } else {
+                        if (tcpServerRunning) {
                             viewModel.stopTcpServer()
-                            tcpServerStatus = "Start"
                             errorMessage = ""
-                            myLog(msg = "PacketWatcherServerView: Stopping $option Server")
+                            myLog(msg = "PacketWatcherServerView: Stopping TCP Server")
+                        } else {
+                            viewModel.startTcpServerView(actualPortNumber)
+                            errorMessage = ""
+                            myLog(msg = "PacketWatcherServerView: Trying to start TCP Server on port $actualPortNumber")
                         }
                     }
                     "UDP" -> {
-                        if(udpServerStatus == "Start") {
-                            viewModel.startUdpServerView(actualPortNumber)
-                            udpServerStatus = "Stop"
-                            errorMessage = ""
-                            myLog(msg = "PacketWatcherServerView: Trying to start $option Server on port $actualPortNumber")
-                        } else {
+                        if (udpServerRunning) {
                             viewModel.stopUdpServer()
-                            udpServerStatus = "Start"
                             errorMessage = ""
-                            myLog(msg = "PacketWatcherServerView: Stopping $option Server")
-                        }
-                    }
-
-                    /*
-                    "TCP" -> {
-                        if (tcpServerStatus == "Start") {
-                            handleStartServerInteraction(
-                                portNumber = actualPortNumber,
-                                protocolSelected = option,
-                                viewModel = viewModel
-                            )
-                            tcpServerStatus = "Stop"
-                            errorMessage = ""
-                            myLog(msg = "PacketWatcherServerView: Trying to start $option Server on port $actualPortNumber")
+                            myLog(msg = "PacketWatcherServerView: Stopping UDP Server")
                         } else {
-                            handleStopServerInteraction(
-                                protocolSelected = option,
-                                viewModel = viewModel
-                            )
-                            tcpServerStatus = "Start"
+                            viewModel.startUdpServerView(actualPortNumber)
                             errorMessage = ""
-                            myLog(msg = "PacketWatcherServerView: Stopping $option Server")
+                            myLog(msg = "PacketWatcherServerView: Trying to start UDP Server on port $actualPortNumber")
                         }
                     }
-                    "UDP" -> {
-                        if (udpServerStatus == "Start") {
-                            handleStartServerInteraction(
-                                portNumber = actualPortNumber,
-                                protocolSelected = option,
-                                viewModel = viewModel
-                            )
-                            udpServerStatus = "Stop"
-                            errorMessage = ""
-                            myLog(msg = "PacketWatcherServerView: Trying to start $option Server on port $actualPortNumber")
-                        } else {
-                            handleStopServerInteraction(
-                                protocolSelected = option,
-                                viewModel = viewModel
-                            )
-                            udpServerStatus = "Start"
-                            errorMessage = ""
-                            myLog(msg = "PacketWatcherServerView: Stopping $option Server")
-                        }
-                    }
-                    */
                 }
             },
         )
@@ -151,6 +104,7 @@ fun PacketWatcherServerView() {
         } else {
             Spacer(modifier = Modifier.height(16.dp))
         }
+
         // ViewModel Output
         Text(
             text = "Monitoring",

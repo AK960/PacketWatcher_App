@@ -1,6 +1,5 @@
 package com.mobilkommunikation.project.ui.screens
 
-import com.mobilkommunikation.project.model.MessageViewModel
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -13,12 +12,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mobilkommunikation.project.model.ServerViewModel
 import com.mobilkommunikation.project.ui.components.InputFields
 import com.mobilkommunikation.project.ui.components.OutputField
 import com.mobilkommunikation.project.ui.components.SegmentedControl
@@ -34,12 +34,11 @@ fun PacketWatcherClientView (
     onProtocolSelected: (String) -> Unit
 ) {
     myLog(msg = "PacketWatcherClientView: Rendering Client View")
+    val viewModel: ServerViewModel = viewModel()
     var ipAddress by rememberSaveable { mutableStateOf("") }
     var portNumber by rememberSaveable { mutableStateOf("") }
     var tcpMessage by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope()
-    val viewModel = MessageViewModel()
 
     Column (
         modifier = Modifier

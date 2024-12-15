@@ -10,14 +10,21 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MessageViewModel : ViewModel() {
+class ServerViewModel : ViewModel() {
     // Monitor list with messages
     private val _messages = MutableStateFlow<List<String>>(emptyList())
     val messages = _messages.asStateFlow()
 
-    // Initialize Jobs
+    // Initialize jobs
     private var tcpServerJob: Job? = null
     private var udpServerJob: Job? = null
+
+    // States of servers
+    private val _tcpServerRunning = MutableStateFlow(false)
+    val tcpServerRunning = _tcpServerRunning.asStateFlow()
+
+    private val _udpServerRunning = MutableStateFlow(false)
+    val udpServerRunning = _udpServerRunning.asStateFlow()
 
     // Append message to list
     fun addMessage(clientInfo: String, message: String) {
@@ -27,17 +34,20 @@ class MessageViewModel : ViewModel() {
         }
     }
 
+    // Logic to start and stop servers
     fun startTcpServerView(portNumber: Int) {
         tcpServerJob = startTcpServer(portNumber = portNumber, scope = viewModelScope) { client, message ->
             viewModelScope.launch {
                 addMessage(client, message)
             }
         }
+        _tcpServerRunning.value = true
     }
 
     fun stopTcpServer() {
         tcpServerJob?.cancel()
         tcpServerJob = null
+        _tcpServerRunning.value = false
         myLog(msg = "handleStopServerInteraction: TCP Server stopped.")
         addMessage("[TCP-Server]", "Server stopped.")
     }
@@ -48,11 +58,13 @@ class MessageViewModel : ViewModel() {
                 addMessage(client, message)
             }
         }
+        _udpServerRunning.value = true
     }
 
     fun stopUdpServer() {
         udpServerJob?.cancel()
         udpServerJob = null
+        _udpServerRunning.value = false
         myLog(msg = "handleStopServerInteraction: UDP Server stopped.")
         addMessage("[UDP-Server]", "Server stopped.")
     }

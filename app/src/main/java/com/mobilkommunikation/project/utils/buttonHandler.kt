@@ -1,6 +1,6 @@
 package com.mobilkommunikation.project.utils
 
-import com.mobilkommunikation.project.model.MessageViewModel
+import com.mobilkommunikation.project.model.ServerViewModel
 import com.mobilkommunikation.project.service.tcp.startTcpClient
 import com.mobilkommunikation.project.service.udp.startUdpClient
 import kotlinx.coroutines.CoroutineScope
@@ -12,7 +12,7 @@ fun handleStartClientInteraction(
     portNumber: Int,
     tcpMessage: String,
     protocolSelected: String,
-    viewModel: MessageViewModel
+    viewModel: ServerViewModel
 ) {
     myLog(type = "debug", msg = "handleStartClientInteraction: Calling $protocolSelected-Client from thread ${Thread.currentThread().name}.")
 
