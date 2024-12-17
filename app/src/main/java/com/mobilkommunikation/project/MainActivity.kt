@@ -114,7 +114,6 @@ fun PacketWatcherAppScaffold () {
                             selected = clientServerStateIndex == index,
                             onClick = {
                                 clientServerStateIndex = index
-                                // navController.navigate(item.title)
                             },
                             label = {
                                 Text(
@@ -146,27 +145,23 @@ fun PacketWatcherAppScaffold () {
                     }
                 }
             }
-        )
-        { innerPadding -> // Scaffold expects Lambda as last parameter to define its content
-            Column (
+        ) { innerPadding ->
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(16.dp)
                     .background(MaterialTheme.colorScheme.background)
             ) {
                 // If bottomBar Index set to Client, run functions that render client view, else server view
                 if (clientServerStateIndex == 0) {
                     myLog(msg = "PacketWatcherAppScaffold: Switching Tabs: Client ($clientServerStateIndex) selected")
                     PacketWatcherClientView(
-                        selectedProtocolStateIndex, // Start-Index for SegmentedControl set to TCP
+                        selectedProtocolStateIndex,
                         onProtocolSelected = { selectedProtocolStateIndex = it }
                     )
                 } else {
                     myLog(msg = "PacketWatcherAppScaffold: Switching Tabs: Server ($clientServerStateIndex) selected")
-                    PacketWatcherServerView(
-
-                    )
+                    PacketWatcherServerView()
                 }
             }
         }

@@ -2,20 +2,27 @@ package com.mobilkommunikation.project.utils
 
 import java.net.ServerSocket
 
+sealed class PortValidationResult {
+    data object Valid : PortValidationResult()
+    data object InvalidRange : PortValidationResult()
+    data object Blocked : PortValidationResult()
+}
+
 fun isValidIpAddress(ipAddress: String): Boolean {
     val ipPattern = Regex("^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$")
     return ipPattern.matches(ipAddress)
 }
 
-fun isValidPortNumber(portNumber: String): Boolean {
+fun validateServerPortNumber(portNumber: String): PortValidationResult {
     val port = portNumber.toIntOrNull()
     if (port == null || port !in 1024..65535) {
-        return false
+        return PortValidationResult.InvalidRange
     }
     return try {
-        ServerSocket(port).close()
-        true
+        val socket = ServerSocket(port)
+        socket.close()
+        PortValidationResult.Valid
     } catch (e: Exception) {
-        false
+        PortValidationResult.Blocked
     }
 }

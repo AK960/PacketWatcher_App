@@ -27,21 +27,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobilkommunikation.project.model.ClientViewModel
-import com.mobilkommunikation.project.model.ServerViewModel
 import com.mobilkommunikation.project.ui.components.InputFields
 import com.mobilkommunikation.project.ui.components.SegmentedControl
 import com.mobilkommunikation.project.ui.components.SendButton
 import com.mobilkommunikation.project.utils.isValidIpAddress
-import com.mobilkommunikation.project.utils.isValidPortNumber
 import com.mobilkommunikation.project.utils.myLog
 
 @Composable
-fun PacketWatcherClientView (
+fun PacketWatcherClientView(
     selectedProtocolStateIndex: String,
     onProtocolSelected: (String) -> Unit
 ) {
     myLog(msg = "PacketWatcherClientView: Rendering Client View")
-    val serverViewModel: ServerViewModel = viewModel()
     val clientViewModel: ClientViewModel = viewModel()
     val messages by clientViewModel.clientMessages.collectAsState()
     var ipAddress by rememberSaveable { mutableStateOf("") }
@@ -49,78 +46,89 @@ fun PacketWatcherClientView (
     var transmissionMessage by rememberSaveable { mutableStateOf("") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
 
-    Column (
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            //.verticalScroll(rememberScrollState())
     ) {
-        SegmentedControl(
-            options = listOf("TCP", "UDP"),
-            selectedOption = selectedProtocolStateIndex,
-            onOptionSelected = onProtocolSelected
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        InputFields(
-            ipAddress = ipAddress,
-            onIpAddressChange = { ipAddress = it },
-            portNumber = portNumber,
-            onPortNumberChange = { portNumber = it },
-            transmissionMessage = transmissionMessage,
-            onTransmissionMessageChange = { transmissionMessage = it }
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        SendButton {
-            if (isValidIpAddress(ipAddress) && isValidPortNumber(portNumber)) {
-
-                if (selectedProtocolStateIndex == "TCP") {
-                    clientViewModel.startTcpClientView(ipAddress, portNumber.toInt(), transmissionMessage)
-                    myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to connect to $ipAddress:$portNumber")
-                } else {
-                    clientViewModel.startUdpClientView(ipAddress, portNumber.toInt(), transmissionMessage)
-                    myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to send message $transmissionMessage to $ipAddress:$portNumber")
-                }
-
-                errorMessage = ""
-                ipAddress = ""
-                portNumber = ""
-                transmissionMessage = ""
-            } else {
-                errorMessage = "Invalid IP address or port number. Choose Port from [1024, 65535]."
-                myLog(type = "error", msg = "PacketWatcherClientView: $errorMessage")
-            }
-            ipAddress = ""
-            portNumber = ""
-            transmissionMessage = ""
-        }
-        if (errorMessage.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                Text(
-                    text = errorMessage,
-                    color = Color.Red,
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-        } else {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-
-        // ViewModel output
-        Text(
-            text = "Monitoring",
+        Column(
             modifier = Modifier
-                .height(48.dp)
-                .fillMaxHeight()
-                .wrapContentHeight(Alignment.CenterVertically),
-            style = MaterialTheme.typography.titleLarge.copy(
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                .wrapContentHeight()
+                .fillMaxWidth()
+        ) {
+            SegmentedControl(
+                options = listOf("TCP", "UDP"),
+                selectedOption = selectedProtocolStateIndex,
+                onOptionSelected = onProtocolSelected
             )
-        )
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            InputFields(
+                ipAddress = ipAddress,
+                onIpAddressChange = { ipAddress = it },
+                portNumber = portNumber,
+                onPortNumberChange = { portNumber = it },
+                transmissionMessage = transmissionMessage,
+                onTransmissionMessageChange = { transmissionMessage = it }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            SendButton {
+                // Input validation before sending message
+                if (isValidIpAddress(ipAddress)) {
+                    when (selectedProtocolStateIndex) {
+                        "TCP" -> {
+                            clientViewModel.startTcpClientView(ipAddress, portNumber.toInt(), transmissionMessage)
+                            myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to connect to $ipAddress:$portNumber")
+                        }
+                        "UDP" -> {
+                            clientViewModel.startUdpClientView(ipAddress, portNumber.toInt(), transmissionMessage)
+                            myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to send message $transmissionMessage to $ipAddress:$portNumber")
+                        }
+                    }
+                    errorMessage = ""
+                    ipAddress = ""
+                    portNumber = ""
+                    transmissionMessage = ""
+                } else {
+                    errorMessage = "Invalid IP address."
+                    myLog(type = "error", msg = "PacketWatcherClientView: $errorMessage")
+                }
+            }
+            if (errorMessage.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = errorMessage,
+                        color = Color.Red,
+                    )
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+            } else {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            Text(
+                text = "Monitoring",
+                modifier = Modifier
+                    .height(48.dp)
+                    .fillMaxHeight()
+                    .wrapContentHeight(Alignment.CenterVertically),
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            )
+        }
+
+        // LazyColumn to take remaining space and be scrollable
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+        ) {
             items(messages) { message ->
                 Text(
                     text = message,
@@ -129,7 +137,5 @@ fun PacketWatcherClientView (
                 )
             }
         }
-        //OutputField(outputText = "Display Output here")
     }
 }
-

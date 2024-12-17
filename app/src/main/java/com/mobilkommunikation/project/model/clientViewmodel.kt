@@ -31,6 +31,7 @@ class ClientViewModel : ViewModel() {
         tcpMessage: String
     ) {
         viewModelScope.launch {
+            addMessage("[TCP-Client]", "Trying to connect to $ipAddress:$portNumber.")
             try {
                 startTcpClient(ipAddress, portNumber, tcpMessage) { client, message ->
                     addMessage(client, message)
@@ -50,6 +51,7 @@ class ClientViewModel : ViewModel() {
         tcpMessage: String
     ) {
         viewModelScope.launch {
+            addMessage("[UDP-Client]", "Trying to send message to $ipAddress:$portNumber.")
             try {
                 startUdpClient(ipAddress, portNumber, tcpMessage) { client, message ->
                     addMessage(client, message)
