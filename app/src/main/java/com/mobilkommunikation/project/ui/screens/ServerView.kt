@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mobilkommunikation.project.model.ClientViewModel
 import com.mobilkommunikation.project.model.ServerViewModel
 import com.mobilkommunikation.project.ui.components.ServerButtons
 import com.mobilkommunikation.project.ui.components.ServerInputFields
@@ -37,10 +38,11 @@ import com.mobilkommunikation.project.utils.myLog
 fun PacketWatcherServerView() {
     myLog(msg = "PacketWatcherServerView: Rendering Server View")
     // Viewmodel
-    val viewModel: ServerViewModel = viewModel()
-    val messages by viewModel.messages.collectAsState()
-    val tcpServerRunning by viewModel.tcpServerRunning.collectAsState()
-    val udpServerRunning by viewModel.udpServerRunning.collectAsState()
+    val serverViewModel: ServerViewModel = viewModel()
+    val clientViewModel: ClientViewModel = viewModel()
+    val messages by serverViewModel.serverMessages.collectAsState()
+    val tcpServerRunning by serverViewModel.tcpServerRunning.collectAsState()
+    val udpServerRunning by serverViewModel.udpServerRunning.collectAsState()
 
     // States
     var portNumber by rememberSaveable { mutableStateOf("") }
@@ -61,35 +63,42 @@ fun PacketWatcherServerView() {
             tcpServerStatus = if (tcpServerRunning) "Stop" else "Start",
             udpServerStatus = if (udpServerRunning) "Stop" else "Start",
             onClick = { option ->
-                if(isValidPortNumber(portNumber)) {
-                    when (option) {
-                        "TCP" -> {
-                            if (tcpServerRunning) {
-                                viewModel.stopTcpServer()
-                                errorMessage = ""
-                                myLog(msg = "PacketWatcherServerView: Stopping TCP Server")
-                            } else {
-                                viewModel.startTcpServerView(portNumber.toInt())
+                when (option) {
+                    "TCP" -> {
+                        if (tcpServerRunning) {
+                            serverViewModel.stopTcpServer()
+                            errorMessage = ""
+                            myLog(msg = "PacketWatcherServerView: Stopping TCP Server")
+                        } else {
+                            if(isValidPortNumber(portNumber)) {
+                                serverViewModel.startTcpServerView(portNumber.toInt())
                                 errorMessage = ""
                                 myLog(msg = "PacketWatcherServerView: Trying to start TCP Server on port $portNumber")
+                            } else {
+                                errorMessage = "Invalid Port Number. Must be [1024, 65535]"
+                                myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
                             }
                         }
-                        "UDP" -> {
-                            if (udpServerRunning) {
-                                viewModel.stopUdpServer()
-                                errorMessage = ""
-                                myLog(msg = "PacketWatcherServerView: Stopping UDP Server")
-                            } else {
-                                viewModel.startUdpServerView(portNumber.toInt())
+
+                    }
+                    "UDP" -> {
+                        if (udpServerRunning) {
+                            serverViewModel.stopUdpServer()
+                            errorMessage = ""
+                            myLog(msg = "PacketWatcherServerView: Stopping UDP Server")
+                        } else {
+                            if(isValidPortNumber(portNumber)) {
+                                serverViewModel.startUdpServerView(portNumber.toInt())
                                 errorMessage = ""
                                 myLog(msg = "PacketWatcherServerView: Trying to start UDP Server on port $portNumber")
+                            } else {
+                                errorMessage = "Invalid Port Number. Choose Port from [1024, 65535]"
+                                myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
                             }
                         }
                     }
-                } else {
-                    errorMessage = "Invalid Port Number. Choose Port from [1024, 65535]"
-                    myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
                 }
+                portNumber = ""
             },
         )
         if (errorMessage.isNotEmpty()) {
@@ -108,7 +117,7 @@ fun PacketWatcherServerView() {
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // ViewModel Output
+        // ViewModel output
         Text(
             text = "Monitoring",
             modifier = Modifier

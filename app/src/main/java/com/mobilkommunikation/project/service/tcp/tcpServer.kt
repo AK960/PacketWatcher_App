@@ -44,18 +44,17 @@ fun startTcpServer (
                         val clientMessage = clientReader.readLine()
                         myLog(msg = "tcpServer: Received message from client $clientAddress: $clientMessage")
 
-                        // Acknowledge Message
-                        val serverMessage = "TCP-Server: Message acknowledged."
-
                         // Return to UI
-                        withContext(Dispatchers.Main) { printOnUi("TCP-Client: $clientAddress", "Message: $clientMessage") }
+                        withContext(Dispatchers.Main) { printOnUi("[TCP-Server]:", "Received message from $clientAddress: $clientMessage") }
 
                         // Respond to Client
+                        val serverMessage = "TCP-Server: Message acknowledged."
                         val serverWriter = clientSocket.getOutputStream().bufferedWriter()
                         serverWriter.write(serverMessage)
                         serverWriter.newLine()
                         serverWriter.flush()
                         myLog(msg = "tcpServer: Sent response to client $clientAddress")
+                        withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Acknowledgement sent to $clientAddress") }
                     } catch (e: Exception) {
                         myLog(type = "error", msg = "tcpServer: Failed to start server. Exit with error: ${e.message}")
                         e.printStackTrace()

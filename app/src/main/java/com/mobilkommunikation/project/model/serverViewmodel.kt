@@ -1,4 +1,5 @@
 package com.mobilkommunikation.project.model
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilkommunikation.project.service.tcp.startTcpServer
@@ -12,8 +13,8 @@ import kotlinx.coroutines.launch
 
 class ServerViewModel : ViewModel() {
     // Monitor list with messages
-    private val _messages = MutableStateFlow<List<String>>(emptyList())
-    val messages = _messages.asStateFlow()
+    private val _serverMessages = MutableStateFlow<List<String>>(emptyList())
+    val serverMessages = _serverMessages.asStateFlow()
 
     // Initialize jobs
     private var tcpServerJob: Job? = null
@@ -29,19 +30,25 @@ class ServerViewModel : ViewModel() {
     // Append message to list
     fun addMessage(clientInfo: String, message: String) {
         val formattedMessage = "$clientInfo $message"
-        _messages.update { currentList ->
+        _serverMessages.update { currentList ->
             listOf(formattedMessage) + currentList
         }
     }
 
     // Logic to start and stop servers
     fun startTcpServerView(portNumber: Int) {
-        tcpServerJob = startTcpServer(portNumber = portNumber, scope = viewModelScope) { client, message ->
-            viewModelScope.launch {
-                addMessage(client, message)
+        try {
+            tcpServerJob = startTcpServer(portNumber = portNumber, scope = viewModelScope) { client, message ->
+                viewModelScope.launch {
+                    addMessage(client, message)
+                }
             }
+            _tcpServerRunning.value = true
+        } catch (e: Exception) {
+            myLog(type = "error", msg = "ServerViewModel: Failed to start server. Exit with error: ${e.message}")
+            addMessage("[TCP-Server]", "Error: ${e.message}")
+            e.printStackTrace()
         }
-        _tcpServerRunning.value = true
     }
 
     fun stopTcpServer() {

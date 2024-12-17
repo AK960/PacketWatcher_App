@@ -18,8 +18,8 @@ fun InputFields(
     onIpAddressChange: (String) -> Unit,
     portNumber: String,
     onPortNumberChange: (String) -> Unit,
-    tcpMessage: String,
-    onTcpMessageChange: (String) -> Unit
+    transmissionMessage: String,
+    onTransmissionMessageChange: (String) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         TextField(
@@ -52,10 +52,10 @@ fun InputFields(
     }
     Row (modifier = Modifier.fillMaxWidth()) {
         TextField(
-            value = tcpMessage,
+            value = transmissionMessage,
             onValueChange = {
                 myLog(msg = "Input Fields: Message changed to '$it'")
-                onTcpMessageChange(it)
+                onTransmissionMessageChange(it)
             },
             label = { Text("Message") },
             keyboardOptions = KeyboardOptions.Default,
