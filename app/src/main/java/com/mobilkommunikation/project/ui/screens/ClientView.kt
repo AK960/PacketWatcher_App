@@ -86,8 +86,6 @@ fun PacketWatcherClientView(
                         }
                     }
                     errorMessage = ""
-                    ipAddress = ""
-                    portNumber = ""
                     transmissionMessage = ""
                 } else {
                     errorMessage = "Invalid IP address."

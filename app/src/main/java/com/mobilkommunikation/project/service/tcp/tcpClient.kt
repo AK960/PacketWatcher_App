@@ -34,6 +34,7 @@ suspend fun startTcpClient(
             socket.close()
         } catch (e: Exception) {
             myLog(type = "error", msg = "tcpClient: Error: ${e.message}")
+            withContext(Dispatchers.Main) { printOnUi("[TCP-Client]", "Error: ${e.message}") }
             e.printStackTrace()
         }
     }

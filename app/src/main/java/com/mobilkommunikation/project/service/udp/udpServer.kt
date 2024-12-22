@@ -23,7 +23,7 @@ fun startUdpServer(
             val socket = DatagramSocket(portNumber)
 
             // Logging
-            withContext(Dispatchers.Main) { printOnUi("[UDP-Server]", "Server listening on port ::$portNumber") }
+            withContext(Dispatchers.Main) { printOnUi("[UDP-Server]", "Server listening on port ::${socket.localPort}") }
             myLog(type = "debug", msg = "udpServer: Server is listening on port $portNumber in thread ${Thread.currentThread().name}.")
             launch {
                 while (isActive) {

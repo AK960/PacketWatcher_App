@@ -67,6 +67,7 @@ In the following Notes section, the status quo of the project is noted down, for
 ### Should <!-- Important but less time critial, can be implemented later --> 
 - Erase label from input field after using it without loosing ability to stop server -> value as state variable in viewmodel? 
 - Edit label to display input options
+- Safe value changes in input fields so they stay when changing view in between
 - Update Readme
 
 ### Could <!-- Desirable but not critical -->

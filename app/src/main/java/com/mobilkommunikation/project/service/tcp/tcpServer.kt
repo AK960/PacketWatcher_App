@@ -23,7 +23,7 @@ fun startTcpServer (
             val serverSocket = ServerSocket(portNumber)
 
             // Logging
-            withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Server listening on port ::$portNumber") }
+            withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Server listening on port ::${serverSocket.localPort}") }
             myLog(type = "debug", msg = "tcpServer: Server started on port $portNumber in thread ${Thread.currentThread().name}.")
             while (isActive) {
                 delay(5000L)

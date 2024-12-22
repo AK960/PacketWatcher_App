@@ -13,13 +13,14 @@ suspend fun startUdpClient(
     udpMessage: String,
     printOnUi: (String, String) -> Unit
 ) {
-    return withContext(Dispatchers.IO) {
+    withContext(Dispatchers.IO) {
         myLog(msg = "udpClient: Sending UPD-packet to $ipAddress:$portNumber. Sending message: $udpMessage")
         try {
             // Create socket and send message
             val socket = DatagramSocket()
             val destAddress = InetAddress.getByName(ipAddress)
             val udpPacket = DatagramPacket(udpMessage.toByteArray(), udpMessage.length, destAddress, portNumber)
+            withContext(Dispatchers.Main) { printOnUi("[UDP-Client]", "Sending packet via ::${socket.localPort}") }
             socket.send(udpPacket)
 
             // Receive response
@@ -29,14 +30,13 @@ suspend fun startUdpClient(
             val udpResponse = String(responsePacket.data, 0, responsePacket.length)
 
             // Log to UI
-            withContext(Dispatchers.Main) {
-                printOnUi("UDP-Client: $ipAddress", "Response: $udpResponse")
-            }
+            withContext(Dispatchers.Main) { printOnUi("[UDP-Client]", "Response: $udpResponse") }
 
             // Close socket
             socket.close()
         } catch (e: Exception) {
             myLog(type = "error", msg = "udpClient: Error: ${e.message}")
+            withContext(Dispatchers.Main) { printOnUi("[UDP-Client]", "Error: ${e.message}") }
             e.printStackTrace()
         }
     }
