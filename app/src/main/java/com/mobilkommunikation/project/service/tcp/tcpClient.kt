@@ -1,6 +1,5 @@
 package com.mobilkommunikation.project.service.tcp
 
-import com.mobilkommunikation.project.utils.getAvailablePort
 import com.mobilkommunikation.project.utils.myLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -8,7 +7,7 @@ import java.net.Socket
 
 suspend fun startTcpClient(
     ipAddress: String,
-    portNumber: Int = getAvailablePort(),
+    portNumber: Int,
     tcpMessage: String,
     printOnUi: (String, String) -> Unit
 ) {

@@ -30,7 +30,9 @@ import com.mobilkommunikation.project.model.ClientViewModel
 import com.mobilkommunikation.project.ui.components.ClientInputFields
 import com.mobilkommunikation.project.ui.components.SegmentedControl
 import com.mobilkommunikation.project.ui.components.SendButton
+import com.mobilkommunikation.project.utils.PortValidationResult
 import com.mobilkommunikation.project.utils.isValidIpAddress
+import com.mobilkommunikation.project.utils.isValidPortNumber
 import com.mobilkommunikation.project.utils.myLog
 
 @Composable
@@ -41,8 +43,8 @@ fun PacketWatcherClientView(
     myLog(msg = "PacketWatcherClientView: Rendering Client View")
     val clientViewModel: ClientViewModel = viewModel()
     val messages by clientViewModel.clientMessages.collectAsState()
-    var ipAddress by rememberSaveable { mutableStateOf("") }
-    var portNumber by rememberSaveable { mutableStateOf("") }
+    var ipAddress by rememberSaveable { mutableStateOf("100.xx.xxx.xx") }
+    var portNumber by rememberSaveable { mutableStateOf("8080") }
     var transmissionMessage by rememberSaveable { mutableStateOf("Hello from Client!") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
 
@@ -74,14 +76,26 @@ fun PacketWatcherClientView(
             SendButton {
                 // Input validation before sending message
                 if (isValidIpAddress(ipAddress)) {
-                    when (selectedProtocolStateIndex) {
-                        "TCP" -> {
-                            clientViewModel.startTcpClientView(ipAddress, portNumber.toInt(), transmissionMessage)
-                            myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to connect to $ipAddress:$portNumber")
+                    when (isValidPortNumber(portNumber)) {
+                        PortValidationResult.Valid -> {
+                            when (selectedProtocolStateIndex) {
+                                "TCP" -> {
+                                    clientViewModel.startTcpClientView(ipAddress, portNumber.toInt(), transmissionMessage)
+                                    myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to connect to $ipAddress:$portNumber")
+                                }
+                                "UDP" -> {
+                                    clientViewModel.startUdpClientView(ipAddress, portNumber.toInt(), transmissionMessage)
+                                    myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to send message $transmissionMessage to $ipAddress:$portNumber")
+                                }
+                            }
                         }
-                        "UDP" -> {
-                            clientViewModel.startUdpClientView(ipAddress, portNumber.toInt(), transmissionMessage)
-                            myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to send message $transmissionMessage to $ipAddress:$portNumber")
+                        PortValidationResult.InvalidRange -> {
+                            errorMessage = "Choose a port from 1024 to 65535."
+                            myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
+                        }
+                        PortValidationResult.Blocked -> {
+                            errorMessage = "Port already in use."
+                            myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
                         }
                     }
                     errorMessage = ""

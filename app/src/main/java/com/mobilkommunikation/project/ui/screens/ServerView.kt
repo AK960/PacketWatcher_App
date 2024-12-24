@@ -76,11 +76,11 @@ fun PacketWatcherServerView() {
                                     myLog(msg = "PacketWatcherServerView: Trying to start TCP Server on port $portNumber")
                                 }
                                 PortValidationResult.InvalidRange -> {
-                                    errorMessage = "Invalid port number. Choose a port from 1024 to 65535."
+                                    errorMessage = "Choose a port from 1024 to 65535."
                                     myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
                                 }
                                 PortValidationResult.Blocked -> {
-                                    errorMessage = "Port is already in use. Choose a different port."
+                                    errorMessage = "Port already in use."
                                     myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
                                 }
                             }

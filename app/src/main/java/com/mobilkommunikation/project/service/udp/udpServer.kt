@@ -1,6 +1,5 @@
 package com.mobilkommunikation.project.service.udp
 
-import com.mobilkommunikation.project.utils.getAvailablePort
 import com.mobilkommunikation.project.utils.myLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +10,7 @@ import java.net.DatagramPacket
 import java.net.DatagramSocket
 
 fun startUdpServer(
-    portNumber: Int = getAvailablePort(),
+    portNumber: Int,
     scope: CoroutineScope,
     printOnUi: (message: String, String) -> Unit
 ): Job {
