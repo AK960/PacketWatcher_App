@@ -3,6 +3,7 @@ package com.mobilkommunikation.project.ui.components
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
@@ -13,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.mobilkommunikation.project.utils.myLog
 
 @Composable
-fun InputFields(
+fun ClientInputFields(
     ipAddress: String,
     onIpAddressChange: (String) -> Unit,
     portNumber: String,
@@ -33,7 +34,6 @@ fun InputFields(
             modifier = Modifier
                 .weight(1f)
                 .padding(4.dp)
-                .focusable(true)
         )
         TextField(
             value = portNumber,
@@ -46,7 +46,6 @@ fun InputFields(
             modifier = Modifier
                 .weight(1f)
                 .padding(4.dp)
-                .focusable(true)
         )
         myLog(msg = "Input Fields: Chosen connection parameters: $ipAddress:$portNumber")
     }
@@ -62,7 +61,28 @@ fun InputFields(
             modifier = Modifier
                 .weight(1f)
                 .padding(4.dp)
+        )
+    }
+}
+
+@Composable
+fun ServerInputFields(
+    portNumber: String,
+    onPortNumberChange: (String) -> Unit,
+) {
+    Row(modifier = Modifier.fillMaxWidth()) {
+        TextField(
+            value = portNumber,
+            onValueChange = {
+                onPortNumberChange(it)
+                myLog(type = "debug", msg = "Input Fields: Port number changed to $it")
+            },
+            label = { Text("Port Number") },
+            modifier = Modifier
+                .weight(0.6f)
+                .padding(4.dp)
+                .height(56.dp)
                 .focusable(true)
         )
-}
+    }
 }

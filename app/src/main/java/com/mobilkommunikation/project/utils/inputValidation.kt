@@ -14,8 +14,9 @@ fun isValidIpAddress(ipAddress: String): Boolean {
 }
 
 fun validateServerPortNumber(portNumber: String): PortValidationResult {
-    val port = portNumber.toIntOrNull()
-    if (port == null || port !in 1024..65535) {
+    // elvis statement: when transforming to int returns null, return valid (later getAvailablePort())
+    val port = portNumber.toIntOrNull() ?: return PortValidationResult.Valid
+    if (port !in 1024..65535) {
         return PortValidationResult.InvalidRange
     }
     return try {

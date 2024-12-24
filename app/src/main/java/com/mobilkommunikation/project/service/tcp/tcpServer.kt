@@ -1,5 +1,6 @@
 package com.mobilkommunikation.project.service.tcp
 
+import com.mobilkommunikation.project.utils.getAvailablePort
 import com.mobilkommunikation.project.utils.myLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +12,7 @@ import java.net.ServerSocket
 import java.net.Socket
 
 fun startTcpServer (
-    portNumber: Int,
+    portNumber: Int = getAvailablePort(),
     scope: CoroutineScope,
     printOnUi: (message: String, String) -> Unit
 ): Job {

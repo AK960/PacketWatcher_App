@@ -44,14 +44,13 @@ fun PacketWatcherServerView() {
     val udpServerRunning by serverViewModel.udpServerRunning.collectAsState()
 
     // States
-    var portNumber by rememberSaveable { mutableStateOf("") }
+    var portNumber by rememberSaveable { mutableStateOf("8080") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            //.verticalScroll(rememberScrollState())
     ) {
         ServerInputFields(
             portNumber = portNumber,
@@ -151,7 +150,6 @@ fun PacketWatcherServerView() {
                 )
             }
         }
-        //OutputField(outputText = "Display Output here")
     }
 }
 

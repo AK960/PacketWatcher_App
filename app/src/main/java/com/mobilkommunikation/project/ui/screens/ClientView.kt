@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.mobilkommunikation.project.model.ClientViewModel
-import com.mobilkommunikation.project.ui.components.InputFields
+import com.mobilkommunikation.project.ui.components.ClientInputFields
 import com.mobilkommunikation.project.ui.components.SegmentedControl
 import com.mobilkommunikation.project.ui.components.SendButton
 import com.mobilkommunikation.project.utils.isValidIpAddress
@@ -43,14 +43,13 @@ fun PacketWatcherClientView(
     val messages by clientViewModel.clientMessages.collectAsState()
     var ipAddress by rememberSaveable { mutableStateOf("") }
     var portNumber by rememberSaveable { mutableStateOf("") }
-    var transmissionMessage by rememberSaveable { mutableStateOf("") }
+    var transmissionMessage by rememberSaveable { mutableStateOf("Hello from Client!") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            //.verticalScroll(rememberScrollState())
     ) {
         Column(
             modifier = Modifier
@@ -63,7 +62,7 @@ fun PacketWatcherClientView(
                 onOptionSelected = onProtocolSelected
             )
             Spacer(modifier = Modifier.height(8.dp))
-            InputFields(
+            ClientInputFields(
                 ipAddress = ipAddress,
                 onIpAddressChange = { ipAddress = it },
                 portNumber = portNumber,
