@@ -110,7 +110,7 @@ fun PacketWatcherServerView() {
                         }
                     }
                 }
-                portNumber = ""
+                portNumber = "${portNumber.toInt() + 1}"
             },
         )
         if (errorMessage.isNotEmpty()) {
