@@ -14,14 +14,15 @@ suspend fun startUdpClient(
     printOnUi: (String, String) -> Unit
 ) {
     withContext(Dispatchers.IO) {
-        myLog(msg = "udpClient: Sending UPD-packet to $ipAddress:$portNumber. Sending message: $udpMessage")
+        myLog(msg = "[UDP-Client] Sending Packet to $ipAddress:$portNumber")
         try {
             // Create socket and send message
             val socket = DatagramSocket()
             val destAddress = InetAddress.getByName(ipAddress)
             val udpPacket = DatagramPacket(udpMessage.toByteArray(), udpMessage.length, destAddress, portNumber)
-            withContext(Dispatchers.Main) { printOnUi("[UDP-Client]", "Sending packet via ::${socket.localPort}") }
             socket.send(udpPacket)
+            myLog(msg = "[UDP-Client] Sending packet to $ipAddress:$portNumber")
+            withContext(Dispatchers.Main) { printOnUi("[UDP-Client]", "Message sent to $ipAddress:$portNumber") }
 
             // Receive response
             val buffer = ByteArray(1024)
@@ -30,15 +31,14 @@ suspend fun startUdpClient(
             val udpResponse = String(responsePacket.data, 0, responsePacket.length)
 
             // Log to UI
-            withContext(Dispatchers.Main) { printOnUi("[UDP-Client]", "Response: $udpResponse") }
+            withContext(Dispatchers.Main) { printOnUi("[UDP-Client][${socket.inetAddress.address}]", udpResponse) }
 
             // Close socket
             socket.close()
         } catch (e: Exception) {
-            myLog(type = "error", msg = "udpClient: Error: ${e.message}")
+            myLog(type = "error", msg = "[UDP-Client] Error: ${e.message}")
             withContext(Dispatchers.Main) { printOnUi("[UDP-Client]", "Error: ${e.message}") }
             e.printStackTrace()
         }
     }
-    // TODO: Implement transmission logic here with flexible protocol parameter
 }

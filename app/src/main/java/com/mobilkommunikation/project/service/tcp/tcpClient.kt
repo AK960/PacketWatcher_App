@@ -12,28 +12,28 @@ suspend fun startTcpClient(
     printOnUi: (String, String) -> Unit
 ) {
     withContext(Dispatchers.IO){
-        myLog(msg = "tcpClient: Establishing TCP-connection to $ipAddress:$portNumber. Sending message: $tcpMessage")
         try {
             // Create socket
             val socket = Socket(ipAddress, portNumber)
-            withContext(Dispatchers.Main) { printOnUi("[TCP-Client]", "Establishing TCP-connection to $ipAddress:$portNumber") }
+            myLog(msg = "[TCP-Client] Connecting to $ipAddress:$portNumber.")
+            withContext(Dispatchers.Main) { printOnUi("[TCP-Client]", "Connecting to $ipAddress:$portNumber") }
 
             // Send message
             socket.getOutputStream().write((tcpMessage + "\n").toByteArray())
-            myLog(msg = "Message sent: $tcpMessage")
-            withContext(Dispatchers.Main) { printOnUi("[TCP-Client]", "Message sent: $tcpMessage") }
+            myLog(msg = "[TCP-Client] Message sent to server")
+            withContext(Dispatchers.Main) { printOnUi("[TCP-Client]", "Message sent to server") }
 
             // Receive response
             val tcpResponse = socket.getInputStream().bufferedReader().readLine()
-            myLog(msg = "Response received: $tcpResponse")
+            myLog(msg = "[TCP-Client] Response from server: $tcpResponse")
 
             // Log response to UI
-            withContext(Dispatchers.Main) { printOnUi("[TCP-Client]", "Response received: $tcpResponse") }
+            withContext(Dispatchers.Main) { printOnUi("[TCP-Client][${socket.inetAddress.address}]", tcpResponse) }
 
             // Close connection
             socket.close()
         } catch (e: Exception) {
-            myLog(type = "error", msg = "tcpClient: Error: ${e.message}")
+            myLog(type = "error", msg = "[TCP-Client] Error: ${e.message}")
             withContext(Dispatchers.Main) { printOnUi("[TCP-Client]", "Error: ${e.message}") }
             e.printStackTrace()
         }

@@ -4,8 +4,6 @@ import com.mobilkommunikation.project.utils.myLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -23,60 +21,52 @@ fun startTcpServer (
             val serverSocket = ServerSocket(portNumber)
 
             // Logging
-            withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Server listening on port ::${serverSocket.localPort}") }
-            myLog(type = "debug", msg = "tcpServer: Server started on port $portNumber in thread ${Thread.currentThread().name}.")
-            while (isActive) {
-                delay(5000L)
-                myLog(type = "debug", msg = "tcpServer: Server listening on port $portNumber in thread ${Thread.currentThread().name}.")
-            }
+            withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Listening on ::${serverSocket.localPort}") }
+            myLog(msg = "[TCP-Server] Server started: Port = $portNumber; Thread = ${Thread.currentThread().name}")
 
             try {
-                // Connect Client
+                // Continuously accept client connections
                 while (true) {
                     val clientSocket: Socket = serverSocket.accept()
                     val clientAddress = clientSocket.inetAddress.hostAddress
-                    myLog(msg = "tcpServer: Client $clientAddress connected. Trying to read data ...")
+                    myLog(msg = "[TCP-Server] $clientAddress connected. Reading message ...")
 
                     try {
-                        // Start Server
                         // Read Message
                         val clientReader = clientSocket.getInputStream().bufferedReader()
                         val clientMessage = clientReader.readLine()
-                        myLog(msg = "tcpServer: Received message from client $clientAddress: $clientMessage")
+                        myLog(msg = "[TCP-Server] Message: $clientMessage")
 
                         // Return to UI
-                        withContext(Dispatchers.Main) { printOnUi("[TCP-Server]:", "Received message from $clientAddress: $clientMessage") }
+                        withContext(Dispatchers.Main) { printOnUi("[TCP-Server][$clientAddress]", clientMessage) }
 
                         // Respond to Client
-                        val serverMessage = "TCP-Server: Message acknowledged."
+                        val serverMessage = "Message acknowledged"
                         val serverWriter = clientSocket.getOutputStream().bufferedWriter()
                         serverWriter.write(serverMessage)
                         serverWriter.newLine()
                         serverWriter.flush()
-                        myLog(msg = "tcpServer: Sent response to client $clientAddress")
-                        withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Acknowledgement sent to $clientAddress") }
+                        myLog(msg = "[TCP-Server] Response sent to $clientAddress")
                     } catch (e: Exception) {
-                        myLog(type = "error", msg = "tcpServer: Failed to start server. Exit with error: ${e.message}")
+                        myLog(type = "error", msg = "[TCP-Server] Failed to start server. Exit with error: ${e.message}")
                         e.printStackTrace()
                     } finally {
                         clientSocket.close()
-                        withContext(Dispatchers.Main) { printOnUi("TCP-Server", "Client-Socket closed.") }
-                        myLog(msg = "tcpServer: Client Socket closed.")
+                        myLog(msg = "[TCP-Server] Client Socket closed.")
                     }
                 }
             } catch (e: IOException) {
-                myLog(type = "error", msg = "tcpServer: Failed to accept client connection. Exit with error: ${e.message}")
+                myLog(type = "error", msg = "[TCP-Server] Failed to accept client connection. Exit with error: ${e.message}")
                 e.printStackTrace()
             } finally {
                 serverSocket.close()
-                withContext(Dispatchers.Main) { printOnUi("TCP-Server", "Server-Socket closed.") }
-                myLog(msg = "tcpServer: ServerSocket closed.")
+                myLog(msg = "[TCP-Server] ServerSocket closed.")
             }
         } catch(e: IOException) {
-            myLog(type = "error", msg = "tcpServer: Failed to create socket. Exit with error: ${e.message}")
+            myLog(type = "error", msg = "[TCP-Server] Failed to create socket. Exit with error: ${e.message}")
             e.printStackTrace()
         } finally {
-            withContext(Dispatchers.Main) { printOnUi("TCP-Server", "Server stopped.") }
+            withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Server stopped.") }
         }
     }
 }
