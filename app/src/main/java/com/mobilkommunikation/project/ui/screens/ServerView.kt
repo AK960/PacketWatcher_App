@@ -26,7 +26,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.mobilkommunikation.project.model.ClientViewModel
 import com.mobilkommunikation.project.model.ServerViewModel
 import com.mobilkommunikation.project.ui.components.ServerButtons
 import com.mobilkommunikation.project.ui.components.ServerInputFields
@@ -40,7 +39,6 @@ fun PacketWatcherServerView() {
     myLog(msg = "PacketWatcherServerView: Rendering Server View")
     // Viewmodel
     val serverViewModel: ServerViewModel = viewModel()
-    val clientViewModel: ClientViewModel = viewModel()
     val messages by serverViewModel.serverMessages.collectAsState()
     val tcpServerRunning by serverViewModel.tcpServerRunning.collectAsState()
     val udpServerRunning by serverViewModel.udpServerRunning.collectAsState()
