@@ -30,8 +30,8 @@ import com.mobilkommunikation.project.model.ServerViewModel
 import com.mobilkommunikation.project.ui.components.ServerButtons
 import com.mobilkommunikation.project.ui.components.ServerInputFields
 import com.mobilkommunikation.project.utils.PortValidationResult
+import com.mobilkommunikation.project.utils.isValidPortNumber
 import com.mobilkommunikation.project.utils.myLog
-import com.mobilkommunikation.project.utils.validateServerPortNumber
 
 
 @Composable
@@ -69,7 +69,7 @@ fun PacketWatcherServerView() {
                             errorMessage = ""
                             myLog(msg = "PacketWatcherServerView: Stopping TCP Server")
                         } else {
-                            when (validateServerPortNumber(portNumber)) {
+                            when (isValidPortNumber(portNumber)) {
                                 PortValidationResult.Valid -> {
                                     serverViewModel.startTcpServerView(portNumber.toInt())
                                     errorMessage = ""
@@ -92,7 +92,7 @@ fun PacketWatcherServerView() {
                             errorMessage = ""
                             myLog(msg = "PacketWatcherServerView: Stopping UDP Server")
                         } else {
-                            when (validateServerPortNumber(portNumber)) {
+                            when (isValidPortNumber(portNumber)) {
                                 PortValidationResult.Valid -> {
                                     serverViewModel.startUdpServerView(portNumber.toInt())
                                     errorMessage = ""

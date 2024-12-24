@@ -1,5 +1,6 @@
 package com.mobilkommunikation.project.service.udp
 
+import com.mobilkommunikation.project.utils.getAvailablePort
 import com.mobilkommunikation.project.utils.myLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -9,7 +10,7 @@ import java.net.InetAddress
 
 suspend fun startUdpClient(
     ipAddress: String,
-    portNumber: Int,
+    portNumber: Int = getAvailablePort(),
     udpMessage: String,
     printOnUi: (String, String) -> Unit
 ) {

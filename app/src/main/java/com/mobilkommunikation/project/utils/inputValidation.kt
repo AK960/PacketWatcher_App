@@ -13,10 +13,10 @@ fun isValidIpAddress(ipAddress: String): Boolean {
     return ipPattern.matches(ipAddress)
 }
 
-fun validateServerPortNumber(portNumber: String): PortValidationResult {
+fun isValidPortNumber(portNumber: String): PortValidationResult {
     // elvis statement: when transforming to int returns null, return valid (later getAvailablePort())
-    val port = portNumber.toIntOrNull() ?: return PortValidationResult.Valid
-    if (port !in 1024..65535) {
+    val port = portNumber.toIntOrNull()
+    if (port == null || port !in 1024..65535) {
         return PortValidationResult.InvalidRange
     }
     return try {
