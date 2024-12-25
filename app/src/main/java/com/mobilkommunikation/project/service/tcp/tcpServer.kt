@@ -16,9 +16,12 @@ fun startTcpServer (
     printOnUi: (message: String, String) -> Unit
 ): Job {
     return scope.launch(Dispatchers.IO) {
+        var serverSocket: ServerSocket? = null
         try {
-            // Create Socket
-            val serverSocket = ServerSocket(portNumber)
+            // Create Socket with reuse address option
+            serverSocket = ServerSocket(portNumber).apply {
+                reuseAddress = true
+            }
 
             // Logging
             withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Listening on ::${serverSocket.localPort}") }

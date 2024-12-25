@@ -66,6 +66,7 @@ fun PacketWatcherServerView() {
                     "TCP" -> {
                         if (tcpServerRunning) {
                             serverViewModel.stopTcpServer()
+                            portNumber = "${portNumber.toInt() - 1}"
                             errorMessage = ""
                             myLog(msg = "PacketWatcherServerView: Stopping TCP Server")
                         } else {
@@ -84,11 +85,13 @@ fun PacketWatcherServerView() {
                                     myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
                                 }
                             }
+                            portNumber = "${portNumber.toInt() + 1}"
                         }
                     }
                     "UDP" -> {
                         if (udpServerRunning) {
                             serverViewModel.stopUdpServer()
+                            portNumber = "${portNumber.toInt() - 1}"
                             errorMessage = ""
                             myLog(msg = "PacketWatcherServerView: Stopping UDP Server")
                         } else {
@@ -107,10 +110,10 @@ fun PacketWatcherServerView() {
                                     myLog(type = "error", msg = "PacketWatcherServerView: $errorMessage")
                                 }
                             }
+                            portNumber = "${portNumber.toInt() + 1}"
                         }
                     }
                 }
-                portNumber = "${portNumber.toInt() + 1}"
             },
         )
         if (errorMessage.isNotEmpty()) {

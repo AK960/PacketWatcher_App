@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.net.ServerSocket
 
 class ServerViewModel : ViewModel() {
     // Monitor list with messages
@@ -26,6 +27,9 @@ class ServerViewModel : ViewModel() {
 
     private val _udpServerRunning = MutableStateFlow(false)
     val udpServerRunning = _udpServerRunning.asStateFlow()
+
+    // Reference to server socket to close when cancelling job
+    private var serverSocket: ServerSocket? = null
 
     // Append message to list
     fun addMessage(clientInfo: String, message: String) {
@@ -55,6 +59,10 @@ class ServerViewModel : ViewModel() {
         tcpServerJob?.cancel()
         tcpServerJob = null
         _tcpServerRunning.value = false
+
+        serverSocket?.close()
+        serverSocket = null
+
         myLog(msg = "handleStopServerInteraction: TCP Server stopped.")
         addMessage("[TCP-Server]", "Server stopped.")
     }
