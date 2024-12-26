@@ -13,7 +13,7 @@ import java.net.Socket
 fun startTcpServer (
     portNumber: Int,
     scope: CoroutineScope,
-    printOnUi: (message: String, String) -> Unit
+    onClientMessage: (ServerSocket, String, String) -> Unit
 ): Job {
     return scope.launch(Dispatchers.IO) {
         var serverSocket: ServerSocket? = null
@@ -24,7 +24,7 @@ fun startTcpServer (
             }
 
             // Logging
-            withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Listening on ::${serverSocket.localPort}") }
+            withContext(Dispatchers.Main) { onClientMessage(serverSocket, "[TCP-Server]", "Listening on ::${serverSocket.localPort}") }
             myLog(msg = "[TCP-Server] Server started: Port = $portNumber; Thread = ${Thread.currentThread().name}")
 
             try {
@@ -41,7 +41,7 @@ fun startTcpServer (
                         myLog(msg = "[TCP-Server] Message: $clientMessage")
 
                         // Return to UI
-                        withContext(Dispatchers.Main) { printOnUi("[TCP-Server][$clientAddress]", clientMessage) }
+                        withContext(Dispatchers.Main) { onClientMessage(serverSocket, "[TCP-Server][$clientAddress]", clientMessage) }
 
                         // Respond to Client
                         val serverMessage = "Message acknowledged"
@@ -61,15 +61,14 @@ fun startTcpServer (
             } catch (e: IOException) {
                 myLog(type = "error", msg = "[TCP-Server] Failed to accept client connection. Exit with error: ${e.message}")
                 e.printStackTrace()
-            } finally {
-                serverSocket.close()
-                myLog(msg = "[TCP-Server] ServerSocket closed.")
             }
         } catch(e: IOException) {
             myLog(type = "error", msg = "[TCP-Server] Failed to create socket. Exit with error: ${e.message}")
             e.printStackTrace()
         } finally {
-            withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", "Server stopped.") }
+            serverSocket?.close()
+            myLog(msg = "[TCP-Server] ServerSocket closed.")
+            withContext(Dispatchers.Main) { onClientMessage(serverSocket!!, "[TCP-Server]", "Server stopped.") }
         }
     }
 }

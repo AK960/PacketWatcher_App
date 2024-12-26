@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.net.DatagramSocket
 import java.net.ServerSocket
 
 class ServerViewModel : ViewModel() {
@@ -28,8 +29,9 @@ class ServerViewModel : ViewModel() {
     private val _udpServerRunning = MutableStateFlow(false)
     val udpServerRunning = _udpServerRunning.asStateFlow()
 
-    // Reference to server socket to close when cancelling job
-    private var serverSocket: ServerSocket? = null
+    // References to server sockets
+    private var tcpServerSocket: ServerSocket? = null
+    private var udpServerSocket: DatagramSocket? = null
 
     // Append message to list
     fun addMessage(clientInfo: String, message: String) {
@@ -39,10 +41,11 @@ class ServerViewModel : ViewModel() {
         }
     }
 
-    // Logic to start and stop servers
+    // Logic to start and stop TCP server
     fun startTcpServerView(portNumber: Int) {
         try {
-            tcpServerJob = startTcpServer(portNumber = portNumber, scope = viewModelScope) { client, message ->
+            tcpServerJob = startTcpServer(portNumber = portNumber, scope = viewModelScope) { socket, client, message ->
+                tcpServerSocket = socket // Keep reference to the ServerSocket
                 viewModelScope.launch {
                     addMessage(client, message)
                 }
@@ -60,28 +63,40 @@ class ServerViewModel : ViewModel() {
         tcpServerJob = null
         _tcpServerRunning.value = false
 
-        serverSocket?.close()
-        serverSocket = null
+        tcpServerSocket?.close()
+        tcpServerSocket = null
 
         myLog(msg = "handleStopServerInteraction: TCP Server stopped.")
         addMessage("[TCP-Server]", "Server stopped.")
     }
 
+    // Logic to start and stop UDP server
     fun startUdpServerView(portNumber: Int) {
-        udpServerJob = startUdpServer(portNumber = portNumber, scope = viewModelScope) { client, message ->
-            viewModelScope.launch {
-                addMessage(client, message)
-            }
+        try {
+            udpServerJob = startUdpServer(portNumber = portNumber, scope = viewModelScope, printOnUi = { label, message ->
+                viewModelScope.launch {
+                    addMessage(label, message)
+                }
+            }, onSocketCreated = { socket ->
+                udpServerSocket = socket // Keep reference to the DatagramSocket
+            })
+            _udpServerRunning.value = true
+        } catch (e: Exception) {
+            myLog(type = "error", msg = "ServerViewModel: Failed to start UDP server. Exit with error: ${e.message}")
+            addMessage("[UDP-Server]", "Error: ${e.message}")
+            e.printStackTrace()
         }
-        _udpServerRunning.value = true
     }
 
     fun stopUdpServer() {
         udpServerJob?.cancel()
         udpServerJob = null
         _udpServerRunning.value = false
+
+        udpServerSocket?.close()
+        udpServerSocket = null
+
         myLog(msg = "handleStopServerInteraction: UDP Server stopped.")
         addMessage("[UDP-Server]", "Server stopped.")
     }
-
 }
