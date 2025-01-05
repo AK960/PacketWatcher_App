@@ -8,6 +8,7 @@ import java.net.Socket
 suspend fun startTcpClient(
     ipAddress: String,
     portNumber: Int,
+    nPackets: Int,
     tcpMessage: String,
     printOnUi: (String, String) -> Unit
 ) {

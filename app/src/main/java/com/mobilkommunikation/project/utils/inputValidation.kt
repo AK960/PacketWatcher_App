@@ -24,6 +24,7 @@ fun isValidPortNumber(portNumber: String): PortValidationResult {
         socket.close()
         PortValidationResult.Valid
     } catch (e: Exception) {
-        PortValidationResult.Blocked
+        PortValidationResult.Valid //here PortValidationResult.Blocked --> .Valid only for adb port forward testing
+            // TODO: How to handle case when port forwarding on port 8080 and server listening on port 8080?
     }
 }

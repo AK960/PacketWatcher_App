@@ -47,6 +47,7 @@ fun PacketWatcherClientView(
     var portNumber by rememberSaveable { mutableStateOf("8080") }
     var transmissionMessage by rememberSaveable { mutableStateOf("Hello from Client!") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
+    var nPackets by rememberSaveable { mutableStateOf("1") }
 
     Column(
         modifier = Modifier
@@ -70,7 +71,9 @@ fun PacketWatcherClientView(
                 portNumber = portNumber,
                 onPortNumberChange = { portNumber = it },
                 transmissionMessage = transmissionMessage,
-                onTransmissionMessageChange = { transmissionMessage = it }
+                onTransmissionMessageChange = { transmissionMessage = it },
+                nPackets = nPackets,
+                onNPacketsChange = { nPackets = it }
             )
             Spacer(modifier = Modifier.height(8.dp))
             SendButton {
@@ -80,11 +83,11 @@ fun PacketWatcherClientView(
                         PortValidationResult.Valid -> {
                             when (selectedProtocolStateIndex) {
                                 "TCP" -> {
-                                    clientViewModel.startTcpClientView(ipAddress, portNumber.toInt(), transmissionMessage)
+                                    clientViewModel.startTcpClientView(ipAddress, portNumber.toInt(), nPackets.toInt(), transmissionMessage)
                                     myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to connect to $ipAddress:$portNumber")
                                 }
                                 "UDP" -> {
-                                    clientViewModel.startUdpClientView(ipAddress, portNumber.toInt(), transmissionMessage)
+                                    clientViewModel.startUdpClientView(ipAddress, portNumber.toInt(), nPackets.toInt(), transmissionMessage)
                                     myLog(msg = "PacketWatcherClientView: Send Button clicked: Trying to send message $transmissionMessage to $ipAddress:$portNumber")
                                 }
                             }

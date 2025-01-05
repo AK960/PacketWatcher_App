@@ -28,14 +28,14 @@ class ClientViewModel : ViewModel() {
     fun startTcpClientView(
         ipAddress: String,
         portNumber: Int,
+        nPackets: Int,
         tcpMessage: String
     ) {
         viewModelScope.launch {
             try {
-                startTcpClient(ipAddress, portNumber, tcpMessage) { client, message ->
+                startTcpClient(ipAddress, portNumber, nPackets, tcpMessage) { client, message ->
                     addMessage(client, message)
                 }
-                addMessage("[TCP-Client]", "Trying to connect to $ipAddress:$portNumber.")
             } catch (e: Exception) {
                 myLog(type = "error", msg = "ClientViewModel: Error starting TCP Client. Exit with error: ${e.message}")
                 addMessage("[TCP-Client]", "Error: ${e.message}")
@@ -47,14 +47,14 @@ class ClientViewModel : ViewModel() {
     fun startUdpClientView(
         ipAddress: String,
         portNumber: Int,
+        nPackets: Int,
         tcpMessage: String
     ) {
         viewModelScope.launch {
             try {
-                startUdpClient(ipAddress, portNumber, tcpMessage) { client, message ->
+                startUdpClient(ipAddress, portNumber, nPackets, tcpMessage) { client, message ->
                     addMessage(client, message)
                 }
-                addMessage("[UDP-Client]", "Sending packet to $ipAddress:$portNumber.")
             } catch (e: Exception) {
                 myLog(
                     type = "error",

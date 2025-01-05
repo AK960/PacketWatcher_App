@@ -20,7 +20,9 @@ fun ClientInputFields(
     portNumber: String,
     onPortNumberChange: (String) -> Unit,
     transmissionMessage: String,
-    onTransmissionMessageChange: (String) -> Unit
+    onTransmissionMessageChange: (String) -> Unit,
+    nPackets: String,
+    onNPacketsChange: (String) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxWidth()) {
         TextField(
@@ -32,7 +34,7 @@ fun ClientInputFields(
             label = { Text("IP-Address") },
             keyboardOptions = KeyboardOptions.Default,
             modifier = Modifier
-                .weight(1f)
+                .weight(0.5f)
                 .padding(4.dp)
         )
         TextField(
@@ -44,7 +46,19 @@ fun ClientInputFields(
             label = { Text("Port Nr.") },
             keyboardOptions = KeyboardOptions.Default,
             modifier = Modifier
-                .weight(1f)
+                .weight(0.25f)
+                .padding(4.dp)
+        )
+        TextField(
+            value = nPackets,
+            onValueChange = {
+                onNPacketsChange(it)
+                myLog(type = "debug", msg = "Input Fields: Number of packets changed to $it")
+            },
+            label = { Text("Packets") },
+            keyboardOptions = KeyboardOptions.Default,
+            modifier = Modifier
+                .weight(0.25f)
                 .padding(4.dp)
         )
         myLog(msg = "Input Fields: Chosen connection parameters: $ipAddress:$portNumber")

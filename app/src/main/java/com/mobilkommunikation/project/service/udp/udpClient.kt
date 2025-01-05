@@ -10,6 +10,7 @@ import java.net.InetAddress
 suspend fun startUdpClient(
     ipAddress: String,
     portNumber: Int,
+    nPackets: Int,
     udpMessage: String,
     printOnUi: (String, String) -> Unit
 ) {
@@ -31,7 +32,10 @@ suspend fun startUdpClient(
             val udpResponse = String(responsePacket.data, 0, responsePacket.length)
 
             // Log to UI
-            withContext(Dispatchers.Main) { printOnUi("[UDP-Client][${socket.inetAddress.address}]", udpResponse) }
+            val senderAddress = responsePacket.address.hostAddress
+            withContext(Dispatchers.Main) {
+                printOnUi("[UDP-Client][$senderAddress]", udpResponse)
+            }
 
             // Close socket
             socket.close()
