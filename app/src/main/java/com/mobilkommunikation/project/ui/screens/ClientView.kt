@@ -43,7 +43,7 @@ fun PacketWatcherClientView(
     myLog(msg = "PacketWatcherClientView: Rendering Client View")
     val clientViewModel: ClientViewModel = viewModel()
     val messages by clientViewModel.clientMessages.collectAsState()
-    var ipAddress by rememberSaveable { mutableStateOf("100.xx.xxx.xx") }
+    var ipAddress by rememberSaveable { mutableStateOf("10.0.2.2") } // Loopback interface for testing in emulator
     var portNumber by rememberSaveable { mutableStateOf("8080") }
     var transmissionMessage by rememberSaveable { mutableStateOf("Hello from Client!") }
     var errorMessage by rememberSaveable { mutableStateOf("") }
