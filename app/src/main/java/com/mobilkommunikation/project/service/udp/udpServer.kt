@@ -29,6 +29,10 @@ fun startUdpServer(
             withContext(Dispatchers.Main) { printOnUi("[UDP-Server]", "Listening on ::${udpSocket.localPort}") }
             myLog(type = "debug", msg = "[UDP-Server] Server is listening on port $portNumber in thread ${Thread.currentThread().name}.")
 
+            // Set Variables
+            var prevTime = System.currentTimeMillis()
+            var nPackets = 0
+
             val buffer = ByteArray(1024)
             while (true) {
                 try {
@@ -38,13 +42,16 @@ fun startUdpServer(
                     val clientMessage = String(udpPacket.data, 0, udpPacket.length)
                     val clientAddress = udpPacket.address.hostAddress
 
-                    // Acknowledge Message
-                    val serverMessage = "Message acknowledged"
+                    val currTime = System.currentTimeMillis()
+                    val deltaTime = currTime - prevTime
+                    prevTime = currTime
+                    nPackets++
 
                     // Return to UI
-                    withContext(Dispatchers.Main) { printOnUi("[UDP-Server][$clientAddress]", clientMessage) }
+                    withContext(Dispatchers.Main) { printOnUi("[UDP-Server][$clientAddress][P#$nPackets][IAT:$deltaTime ms]", clientMessage) }
 
                     // Respond to Client
+                    val serverMessage = "Message acknowledged"
                     val response = serverMessage.toByteArray()
                     val responsePacket = DatagramPacket(response, response.size, udpPacket.address, udpPacket.port)
                     udpSocket.send(responsePacket)

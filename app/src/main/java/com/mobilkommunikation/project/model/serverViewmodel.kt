@@ -35,7 +35,7 @@ class ServerViewModel : ViewModel() {
 
     // Append message to list
     fun addMessage(clientInfo: String, message: String) {
-        val formattedMessage = "$clientInfo $message"
+        val formattedMessage = "$clientInfo$message"
         _serverMessages.update { currentList ->
             listOf(formattedMessage) + currentList
         }

@@ -35,23 +35,37 @@ fun startTcpServer (
                     myLog(msg = "[TCP-Server] $clientAddress connected. Reading message ...")
 
                     try {
-                        // Read Message
+                        // Initialize a reader for the client socket
                         val clientReader = clientSocket.getInputStream().bufferedReader()
-                        val clientMessage = clientReader.readLine()
-                        myLog(msg = "[TCP-Server] Message: $clientMessage")
-
-                        // Return to UI
-                        withContext(Dispatchers.Main) { onClientMessage(serverSocket, "[TCP-Server][$clientAddress]", clientMessage) }
-
-                        // Respond to Client
-                        val serverMessage = "Message acknowledged"
                         val serverWriter = clientSocket.getOutputStream().bufferedWriter()
-                        serverWriter.write(serverMessage)
-                        serverWriter.newLine()
-                        serverWriter.flush()
-                        myLog(msg = "[TCP-Server] Response sent to $clientAddress")
+
+                        var nPackets = 0 // Counter for the number of messages received
+                        var prevTime = System.currentTimeMillis()
+
+                        while (true) {
+                            // Read Message
+                            val clientMessage = clientReader.readLine() ?: break // Break the loop if null (client disconnected)
+                            myLog(msg = "[TCP-Server] Message: $clientMessage")
+
+                            val currTime = System.currentTimeMillis()
+                            val deltaTime = currTime - prevTime
+                            prevTime = currTime
+                            nPackets++ // Increment the message counter
+
+                            // Return to UI
+                            withContext(Dispatchers.Main) {
+                                onClientMessage(serverSocket, "[TCP-Server][$clientAddress][P#$nPackets][IAT:$deltaTime ms] ", clientMessage)
+                            }
+
+                            // Respond to Client
+                            val serverMessage = "Message acknowledged"
+                            serverWriter.write(serverMessage)
+                            serverWriter.newLine()
+                            serverWriter.flush()
+                            myLog(msg = "[TCP-Server] Response sent to $clientAddress")
+                        }
                     } catch (e: Exception) {
-                        myLog(type = "error", msg = "[TCP-Server] Failed to start server. Exit with error: ${e.message}")
+                        myLog(type = "error", msg = "[TCP-Server] Error processing client messages: ${e.message}")
                         e.printStackTrace()
                     } finally {
                         clientSocket.close()

@@ -32,7 +32,7 @@ suspend fun startTcpClient(
                 prevTime = currTime
 
                 // Build message
-                val packetMessage = "[P#$i][DT:$deltaTime ms] $tcpMessage"
+                val packetMessage = "[P#$i][IAT:$deltaTime ms] $tcpMessage"
 
                 // Create and send packet
                 socket.getOutputStream().write((packetMessage).toByteArray())
