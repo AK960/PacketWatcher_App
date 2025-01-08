@@ -18,49 +18,69 @@ fun startUdpServer(
 ): Job {
     return scope.launch(Dispatchers.IO) {
         var udpSocket: DatagramSocket? = null
+
+        // 1. Try: Create DatagramSocket
         try {
-            // Create Socket
+            // Create DatagramSocket with reuse address option
             udpSocket = DatagramSocket(portNumber).apply {
                 reuseAddress = true
             }
-            onSocketCreated(udpSocket) // Set the socket reference in the ViewModel
+            onSocketCreated(udpSocket) // Set socket reference in the ViewModel
 
             // Logging
             withContext(Dispatchers.Main) { printOnUi("[UDP-Server]", "Listening on ::${udpSocket.localPort}") }
             myLog(type = "debug", msg = "[UDP-Server] Server is listening on port $portNumber in thread ${Thread.currentThread().name}.")
 
             // Set Variables
-            var prevTime = System.currentTimeMillis()
+            var refTime: Long? = null
             var nPackets = 0
-
             val buffer = ByteArray(1024)
-            while (true) {
-                try {
+
+            // 2. Try: Receive packets continuously
+            try {
+                while (true) {
                     // Read Message
                     val udpPacket = DatagramPacket(buffer, buffer.size)
                     udpSocket.receive(udpPacket)
                     val clientMessage = String(udpPacket.data, 0, udpPacket.length)
                     val clientAddress = udpPacket.address.hostAddress
 
-                    val currTime = System.currentTimeMillis()
-                    val deltaTime = currTime - prevTime
-                    prevTime = currTime
-                    nPackets++
+                    // Calculate Inter Arrival Time
+                    val recvTime = System.currentTimeMillis()
+                    if(refTime == null) {
+                        refTime = recvTime
+                        myLog(msg = "[UDP-Server] First packet in connection: No IAT calculated.")
+                        withContext(Dispatchers.Main) {
+                            printOnUi("[UDP-Server]", "[$clientAddress][P#$nPackets][IAT: null]")
+                            printOnUi("[UDP-Server]", clientMessage)
+                        }
+                    } else {
+                        val serverIAT = recvTime - refTime
+                        refTime = recvTime
+                        nPackets++
 
-                    // Return to UI
-                    withContext(Dispatchers.Main) { printOnUi("[UDP-Server][$clientAddress][P#$nPackets][IAT:$deltaTime ms]", clientMessage) }
+                        // Logging
+                        myLog(msg = "[UDP-Server] IAT: $serverIAT ms")
+                        withContext(Dispatchers.Main) {
+                            printOnUi("[UDP-Server]", "[$clientAddress][P#$nPackets][IAT:$serverIAT ms]")
+                            printOnUi("[UDP-Server]", clientMessage)
+                        }
+                    }
 
                     // Respond to Client
                     val serverMessage = "Message acknowledged"
                     val response = serverMessage.toByteArray()
-                    val responsePacket = DatagramPacket(response, response.size, udpPacket.address, udpPacket.port)
+                    val responsePacket =
+                        DatagramPacket(response, response.size, udpPacket.address, udpPacket.port)
                     udpSocket.send(responsePacket)
                     myLog(msg = "[UDP-Server] Sent response to client $clientAddress")
-                } catch (e: IOException) {
-                    myLog(type = "error", msg = "[UDP-Server] Error receiving packet: ${e.message}")
-                    e.printStackTrace()
                 }
+            // 2. Catch: Error receiving packet
+            } catch (e: IOException) {
+                myLog(type = "error", msg = "[UDP-Server] Error receiving packet: ${e.message}")
+                e.printStackTrace()
             }
+        // 1. Catch: Failed to create DatagramSocket
         } catch (e: IOException) {
             myLog(type = "error", msg = "[UDP-Server] Failed to create socket: ${e.message}")
             e.printStackTrace()

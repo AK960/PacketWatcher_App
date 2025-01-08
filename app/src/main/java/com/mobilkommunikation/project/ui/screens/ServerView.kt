@@ -148,7 +148,7 @@ fun PacketWatcherServerView() {
             items(messages) { message ->
                 Text(
                     text = message,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(4.dp)
                 )
             }
