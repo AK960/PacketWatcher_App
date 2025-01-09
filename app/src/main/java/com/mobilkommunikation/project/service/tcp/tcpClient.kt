@@ -6,6 +6,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.net.InetAddress
 import java.net.Socket
+import java.net.SocketTimeoutException
 
 suspend fun startTcpClient(
     ipAddress: String,
@@ -15,45 +16,55 @@ suspend fun startTcpClient(
     printOnUi: (String, String) -> Unit
 ) {
     withContext(Dispatchers.IO){
-        try {
-            withContext(Dispatchers.Main) { printOnUi("[TCP-Client] ", "Connecting to $ipAddress:$portNumber") }
-            myLog(msg = "[TCP-Client] Connecting to $ipAddress:$portNumber.")
-            myLog(msg = "[UDP-Client] Sending $nPackets packets to $ipAddress:$portNumber")
+        myLog(msg = "[TCP-Client] Connecting to $ipAddress:$portNumber.")
+        withContext(Dispatchers.Main) { printOnUi("[TCP-Client] ", "Connecting to $ipAddress:$portNumber.") }
 
-            // Set variables and create socket
-            var prevTime = System.currentTimeMillis()
-            val destAddress = InetAddress.getByName(ipAddress)
-            val socket = Socket(destAddress, portNumber)
+        // Create Socket
+        val socket = Socket(InetAddress.getByName(ipAddress), portNumber)
+        socket.soTimeout = 5000
+
+        try {
+            var refTime: Long? = null
 
             for (i in 1..nPackets) {
-                // IAT handling
-                val currTime = System.currentTimeMillis()
-                val deltaTime = currTime - prevTime
-                prevTime = currTime
+                val sendTime = System.currentTimeMillis()
 
-                // Build message
-                val packetMessage = "[P#$i][IAT:$deltaTime ms] $tcpMessage"
-
-                // Create and send packet
-                socket.getOutputStream().write((packetMessage).toByteArray())
-                withContext(Dispatchers.Main) { printOnUi("[TCP-Client]", packetMessage) }
+                if (refTime == null) {
+                    refTime = sendTime
+                    myLog(msg = "[TCP-Client] First packet in stream: No IAT calculated.")
+                    withContext(Dispatchers.Main) { printOnUi("[TCP-Client][P#$i] ", "First packet: No IAT calculated.") }
+                    val packetMessage = "[P#$i] $tcpMessage"
+                    socket.getOutputStream().write((packetMessage).toByteArray())
+                } else {
+                    val iat = sendTime - refTime
+                    refTime = sendTime
+                    myLog(msg = "[TCP-Client] IAT: $iat ms")
+                    withContext(Dispatchers.Main) { printOnUi("[TCP-Client][P#$i] ", "Inter-Arrival-Time (IAT): $iat ms") }
+                    val packetMessage = "[P#$i] $tcpMessage"
+                    socket.getOutputStream().write((packetMessage).toByteArray())
+                }
 
                 // delay 1s
                 delay(1000)
             }
 
             // Receive response
-            val tcpResponse = socket.getInputStream().bufferedReader().readLine()
+            try {
+                val tcpResponse = socket.getInputStream().bufferedReader().readLine()
+                withContext(Dispatchers.Main) { printOnUi("[TCP-Server] ", tcpResponse) }
+            } catch (e: SocketTimeoutException) {
+                myLog(type = "error", msg = "[TCP-Client] Error receiving response: ${e.message}")
+                withContext(Dispatchers.Main) { printOnUi("[TCP-Client] ", "No response from server within 5 seconds. Closing socket.") }
+                e.printStackTrace()
+            }
 
-            // Log response to UI
-            withContext(Dispatchers.Main) { printOnUi("[TCP-Server][${socket.inetAddress.address}] ", tcpResponse) }
-
-            // Close connection
-            socket.close()
         } catch (e: Exception) {
             myLog(type = "error", msg = "[TCP-Client] Error: ${e.message}")
             withContext(Dispatchers.Main) { printOnUi("[TCP-Client] ", "Error: ${e.message}") }
             e.printStackTrace()
+        } finally {
+            socket.close()
+            withContext(Dispatchers.Main) { printOnUi("[TCP-Client] ", "Everything sent. Server-connection closed.") }
         }
     }
 }

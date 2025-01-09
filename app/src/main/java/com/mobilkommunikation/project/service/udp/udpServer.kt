@@ -33,12 +33,13 @@ fun startUdpServer(
 
             // Set Variables
             var refTime: Long? = null
-            var nPackets = 0
             val buffer = ByteArray(1024)
 
             // 2. Try: Receive packets continuously
             try {
                 while (true) {
+                    var nPackets = 1
+
                     // Read Message
                     val udpPacket = DatagramPacket(buffer, buffer.size)
                     udpSocket.receive(udpPacket)
@@ -51,34 +52,37 @@ fun startUdpServer(
                         refTime = recvTime
                         myLog(msg = "[UDP-Server] First packet in connection: No IAT calculated.")
                         withContext(Dispatchers.Main) {
-                            printOnUi("[UDP-Server]", "[$clientAddress][P#$nPackets][IAT: null]")
-                            printOnUi("[UDP-Server]", clientMessage)
+                            printOnUi("[UDP-Server][P#$nPackets] ", "First packet: No IAT calculated.")
+                            printOnUi("[UDP-Client][P#$nPackets] ", clientMessage)
                         }
                     } else {
-                        val serverIAT = recvTime - refTime
+                        val iat = recvTime - refTime
                         refTime = recvTime
                         nPackets++
 
                         // Logging
-                        myLog(msg = "[UDP-Server] IAT: $serverIAT ms")
+                        myLog(msg = "[UDP-Server] IAT: $iat ms")
                         withContext(Dispatchers.Main) {
-                            printOnUi("[UDP-Server]", "[$clientAddress][P#$nPackets][IAT:$serverIAT ms]")
-                            printOnUi("[UDP-Server]", clientMessage)
+                            printOnUi("[UDP-Server][P#$nPackets] ", "Inter-Arrival-Time (IAT): $iat ms")
+                            printOnUi("[UDP-Client][P#$nPackets] ", clientMessage)
                         }
                     }
 
                     // Respond to Client
-                    val serverMessage = "Message acknowledged"
+                    val serverMessage = "Message acknowledged."
                     val response = serverMessage.toByteArray()
                     val responsePacket =
                         DatagramPacket(response, response.size, udpPacket.address, udpPacket.port)
                     udpSocket.send(responsePacket)
-                    myLog(msg = "[UDP-Server] Sent response to client $clientAddress")
+                    myLog(msg = "[UDP-Server] Sent response to client $clientAddress.")
+                    withContext(Dispatchers.Main) { printOnUi("[UDP-Server] ", "Sent response to client $clientAddress.") }
                 }
             // 2. Catch: Error receiving packet
             } catch (e: IOException) {
                 myLog(type = "error", msg = "[UDP-Server] Error receiving packet: ${e.message}")
                 e.printStackTrace()
+            } finally {
+
             }
         // 1. Catch: Failed to create DatagramSocket
         } catch (e: IOException) {

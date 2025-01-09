@@ -35,12 +35,13 @@ fun startTcpServer (
                 while (true) {
                     val clientSocket: Socket = serverSocket.accept()
                     val clientAddress = clientSocket.inetAddress.hostAddress
-                    myLog(msg = "[TCP-Server] $clientAddress connected. Reading message ...")
+                    myLog(msg = "[TCP-Server] $clientAddress connected. Reading message(s) ...")
+                    withContext(Dispatchers.Main) { onClientMessage(serverSocket, "[TCP-Server] ", "[$clientAddress] connected.") }
 
                     // 3. Try: Process client messages
                     try {
                         // Variables
-                        var nPackets = 0 // Counter for the number of messages received
+                        var nPackets = 1 // Counter for the number of messages received
                         var refTime: Long? = null
 
                         // Initialize reader and writer
@@ -59,25 +60,25 @@ fun startTcpServer (
                                 refTime = recvTime
                                 myLog(msg = "[TCP-Server] First packet in connection: No IAT calculated.")
                                 withContext(Dispatchers.Main) {
-                                    onClientMessage(serverSocket, "[TCP-Server]", "[$clientAddress][P#$nPackets][S-IAT: null]")
-                                    onClientMessage(serverSocket, "[TCP-Server] ", clientMessage)
+                                    onClientMessage(serverSocket, "[TCP-Server][P#$nPackets] ", "First packet: No IAT calculated.")
+                                    onClientMessage(serverSocket, "[TCP-Server][P#$nPackets] ", clientMessage)
                                 }
+                                nPackets ++
                             } else {
-                                val serverIAT = recvTime - refTime
+                                val iat = recvTime - refTime
                                 refTime = recvTime
-                                nPackets++ // Increment the message counter
-
                                 // Logging
-                                myLog(msg = "[TCP-Server] IAT: $serverIAT ms")
+                                myLog(msg = "[TCP-Server] IAT: $iat ms")
                                 withContext(Dispatchers.Main) {
-                                    onClientMessage(serverSocket, "[TCP-Server]", "[$clientAddress][P#$nPackets][S-IAT:$serverIAT ms]")
-                                    onClientMessage(serverSocket, "[TCP-Server] ", clientMessage)
+                                    onClientMessage(serverSocket, "[TCP-Server][P#$nPackets] ", "Inter-Arrival-Time (IAT): $iat ms]")
+                                    onClientMessage(serverSocket, "[TCP-Server][P#$nPackets] ", clientMessage)
                                 }
+                                nPackets++
                             }
                         }
 
                         // Respond to Client
-                        val serverMessage = "Messages acknowledged"
+                        val serverMessage = "Messages acknowledged."
                         serverWriter.write(serverMessage)
                         serverWriter.newLine()
                         serverWriter.flush()

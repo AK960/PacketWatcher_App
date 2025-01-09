@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetAddress
+import java.net.SocketTimeoutException
 
 suspend fun startUdpClient(
     ipAddress: String,
@@ -15,47 +16,60 @@ suspend fun startUdpClient(
     udpMessage: String,
     printOnUi: (String, String) -> Unit
 ) {
-    withContext(Dispatchers.IO) launch@{
-        try {
-            myLog(msg = "[UDP-Client] Sending $nPackets packets to $ipAddress:$portNumber")
+    withContext(Dispatchers.IO) {
+        myLog(msg = "[UDP-Client] Sending $nPackets packets to $ipAddress:$portNumber.")
 
-            // Set variables and create socket
-            var prevTime = System.currentTimeMillis()
+        // Create Socket
+        val socket = DatagramSocket()
+        socket.soTimeout = 5000
+
+        try {
+            var refTime: Long? = null
             val destAddress = InetAddress.getByName(ipAddress)
-            val socket = DatagramSocket()
 
             for (i in 1..nPackets) {
-                // IAT handling
-                val currTime = System.currentTimeMillis()
-                val deltaTime = currTime - prevTime
-                prevTime = currTime
+                // Calculate Inter Arrival Time
+                val sendTime = System.currentTimeMillis()
 
-                // Build message
-                val packetMessage = "[P#$i][DT:$deltaTime ms] $udpMessage"
-
-                // Create and send packet
-                val udpPacket = DatagramPacket(packetMessage.toByteArray(), packetMessage.length, destAddress, portNumber)
-                socket.send(udpPacket)
-                withContext(Dispatchers.Main) { printOnUi("[UDP-Client]", packetMessage) }
-
+                if (refTime == null) {
+                    refTime = sendTime
+                    myLog(msg = "[UDP-Client] First packet in stream: No IAT calculated.")
+                    withContext(Dispatchers.Main) { printOnUi("[TCP-Client][P#$i] ", "First packet: No IAT calculated.") }
+                    val packetMessage = "[Client][P#$i] $udpMessage"
+                    val udpPacket = DatagramPacket(packetMessage.toByteArray(), packetMessage.length, destAddress, portNumber)
+                    socket.send(udpPacket)
+                } else {
+                    val iat = sendTime - refTime
+                    refTime = sendTime
+                    myLog(msg = "[UDP-Client] IAT: $iat ms")
+                    withContext(Dispatchers.Main) { printOnUi("[TCP-Client][P#$i] ", "Inter-Arrival-Time (IAT): $iat ms") }
+                    val packetMessage = "[UDP-Client][P#$i] $udpMessage"
+                    val udpPacket = DatagramPacket(packetMessage.toByteArray(), packetMessage.length, destAddress, portNumber)
+                    socket.send(udpPacket)
+                }
                 // delay 1s
                 delay(1000)
             }
 
             // Receive response
-            val buffer = ByteArray(1024)
-            val responsePacket = DatagramPacket(buffer, buffer.size)
-            socket.receive(responsePacket)
-            val udpResponse = String(responsePacket.data, 0, responsePacket.length)
+            try {
+                val buffer = ByteArray(1024)
+                val responsePacket = DatagramPacket(buffer, buffer.size)
+                socket.receive(responsePacket)
+                val udpResponse = String(responsePacket.data, 0, responsePacket.length)
 
-            // Log response to UI
-            val senderAddress = responsePacket.address.hostAddress
-            withContext(Dispatchers.Main) {
-                printOnUi("[UDP-Server][$senderAddress] ", udpResponse)
+                withContext(Dispatchers.Main) {
+                    printOnUi("[UDP-Server] ", udpResponse)
+                }
+            } catch (e: SocketTimeoutException) {
+                myLog(type = "error", msg = "[UDP-Client] Error receiving response: ${e.message}")
+                withContext(Dispatchers.Main) { printOnUi("[Client] ", "No response from server within 5 seconds. Closing socket.") }
+                e.printStackTrace()
+            } finally {
+                // Close socket
+                socket.close()
             }
 
-            // Close socket
-            socket.close()
         } catch (e: Exception) {
             myLog(type = "error", msg = "[UDP-Client] Error: ${e.message}")
             withContext(Dispatchers.Main) { printOnUi("[UDP-Client] ", "Error: ${e.message}") }
