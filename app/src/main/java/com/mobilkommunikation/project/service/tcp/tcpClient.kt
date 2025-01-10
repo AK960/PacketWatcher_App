@@ -51,16 +51,16 @@ suspend fun startTcpClient(
             // Receive response
             try {
                 val tcpResponse = socket.getInputStream().bufferedReader().readLine()
-                withContext(Dispatchers.Main) { printOnUi("[TCP-Server] ", tcpResponse) }
+                withContext(Dispatchers.Main) { printOnUi("[TCP-Server]", tcpResponse) }
             } catch (e: SocketTimeoutException) {
                 myLog(type = "error", msg = "[TCP-Client] Error receiving response: ${e.message}")
-                withContext(Dispatchers.Main) { printOnUi("[TCP-Client] ", "No response from server within 5 seconds. Closing socket.") }
+                withContext(Dispatchers.Main) { printOnUi("[TCP-Client][Error] ", "No response from server within 5 seconds. Closing socket.") }
                 e.printStackTrace()
             }
 
         } catch (e: Exception) {
             myLog(type = "error", msg = "[TCP-Client] Error: ${e.message}")
-            withContext(Dispatchers.Main) { printOnUi("[TCP-Client] ", "Error: ${e.message}") }
+            withContext(Dispatchers.Main) { printOnUi("[TCP-Client][Error] ", "${e.message}") }
             e.printStackTrace()
         } finally {
             socket.close()

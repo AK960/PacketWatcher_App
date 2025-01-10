@@ -43,7 +43,7 @@ fun ClientInputFields(
                 onPortNumberChange(it)
                 myLog(type = "debug", msg = "Input Fields: Port number changed to $it")
             },
-            label = { Text("Port Nr.") },
+            label = { Text("Port") },
             keyboardOptions = KeyboardOptions.Default,
             modifier = Modifier
                 .weight(0.25f)
@@ -55,7 +55,7 @@ fun ClientInputFields(
                 onNPacketsChange(it)
                 myLog(type = "debug", msg = "Input Fields: Number of packets changed to $it")
             },
-            label = { Text("Packets") },
+            label = { Text("P#") },
             keyboardOptions = KeyboardOptions.Default,
             modifier = Modifier
                 .weight(0.25f)

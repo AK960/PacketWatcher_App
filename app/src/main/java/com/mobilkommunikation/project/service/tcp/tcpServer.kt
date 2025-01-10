@@ -27,7 +27,7 @@ fun startTcpServer (
             }
             // Logging
             myLog(msg = "[TCP-Server] ServerSocket created on port $portNumber in thread ${Thread.currentThread().name}.")
-            withContext(Dispatchers.Main) { onClientMessage(serverSocket, "[TCP-Server]", "Listening on ::${serverSocket.localPort}") }
+            withContext(Dispatchers.Main) { onClientMessage(serverSocket, "[TCP-Server] ", "Listening on ::${serverSocket.localPort}") }
 
             // 2. Try: Accept client connections
             try {
@@ -36,7 +36,7 @@ fun startTcpServer (
                     val clientSocket: Socket = serverSocket.accept()
                     val clientAddress = clientSocket.inetAddress.hostAddress
                     myLog(msg = "[TCP-Server] $clientAddress connected. Reading message(s) ...")
-                    withContext(Dispatchers.Main) { onClientMessage(serverSocket, "[TCP-Server] ", "[$clientAddress] connected.") }
+                    withContext(Dispatchers.Main) { onClientMessage(serverSocket, "[TCP-Server]", "[$clientAddress] Client connected.") }
 
                     // 3. Try: Process client messages
                     try {
@@ -61,7 +61,7 @@ fun startTcpServer (
                                 myLog(msg = "[TCP-Server] First packet in connection: No IAT calculated.")
                                 withContext(Dispatchers.Main) {
                                     onClientMessage(serverSocket, "[TCP-Server][P#$nPackets] ", "First packet: No IAT calculated.")
-                                    onClientMessage(serverSocket, "[TCP-Server][P#$nPackets] ", clientMessage)
+                                    onClientMessage(serverSocket, "[TCP-Client][P#$nPackets] ", clientMessage)
                                 }
                                 nPackets ++
                             } else {
@@ -71,16 +71,16 @@ fun startTcpServer (
                                 myLog(msg = "[TCP-Server] IAT: $iat ms")
                                 withContext(Dispatchers.Main) {
                                     onClientMessage(serverSocket, "[TCP-Server][P#$nPackets] ", "Inter-Arrival-Time (IAT): $iat ms]")
-                                    onClientMessage(serverSocket, "[TCP-Server][P#$nPackets] ", clientMessage)
+                                    onClientMessage(serverSocket, "[TCP-Client][P#$nPackets] ", clientMessage)
                                 }
                                 nPackets++
                             }
                         }
 
                         // Respond to Client
-                        val serverMessage = "Messages acknowledged."
+                        val serverMessage = "[ACK] Messages acknowledged."
                         serverWriter.write(serverMessage)
-                        serverWriter.newLine()
+                        //serverWriter.newLine()
                         serverWriter.flush()
                         myLog(msg = "[TCP-Server] Response sent to $clientAddress")
 
@@ -90,6 +90,7 @@ fun startTcpServer (
                     } finally {
                         clientSocket.close()
                         myLog(msg = "[TCP-Server] Client Socket closed.")
+                        onClientMessage(serverSocket, "[TCP-Server]", "[$clientAddress] Client disconnected.")
                     }
                 }
             // 2. Catch: Failed to accept client connection

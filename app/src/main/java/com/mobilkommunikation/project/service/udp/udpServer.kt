@@ -28,17 +28,17 @@ fun startUdpServer(
             onSocketCreated(udpSocket) // Set socket reference in the ViewModel
 
             // Logging
-            withContext(Dispatchers.Main) { printOnUi("[UDP-Server]", "Listening on ::${udpSocket.localPort}") }
+            withContext(Dispatchers.Main) { printOnUi("[UDP-Server] ", "Listening on ::${udpSocket.localPort}") }
             myLog(type = "debug", msg = "[UDP-Server] Server is listening on port $portNumber in thread ${Thread.currentThread().name}.")
 
             // Set Variables
             var refTime: Long? = null
             val buffer = ByteArray(1024)
+            var nPackets = 0
 
             // 2. Try: Receive packets continuously
             try {
                 while (true) {
-                    var nPackets = 1
 
                     // Read Message
                     val udpPacket = DatagramPacket(buffer, buffer.size)
@@ -50,6 +50,7 @@ fun startUdpServer(
                     val recvTime = System.currentTimeMillis()
                     if(refTime == null) {
                         refTime = recvTime
+                        nPackets = 1
                         myLog(msg = "[UDP-Server] First packet in connection: No IAT calculated.")
                         withContext(Dispatchers.Main) {
                             printOnUi("[UDP-Server][P#$nPackets] ", "First packet: No IAT calculated.")
@@ -69,20 +70,18 @@ fun startUdpServer(
                     }
 
                     // Respond to Client
-                    val serverMessage = "Message acknowledged."
+                    val serverMessage = "[ACK] Messages acknowledged."
                     val response = serverMessage.toByteArray()
                     val responsePacket =
                         DatagramPacket(response, response.size, udpPacket.address, udpPacket.port)
                     udpSocket.send(responsePacket)
                     myLog(msg = "[UDP-Server] Sent response to client $clientAddress.")
-                    withContext(Dispatchers.Main) { printOnUi("[UDP-Server] ", "Sent response to client $clientAddress.") }
+                    //withContext(Dispatchers.Main) { printOnUi("[UDP-Server] ", "Sent response to client $clientAddress.") }
                 }
             // 2. Catch: Error receiving packet
             } catch (e: IOException) {
                 myLog(type = "error", msg = "[UDP-Server] Error receiving packet: ${e.message}")
                 e.printStackTrace()
-            } finally {
-
             }
         // 1. Catch: Failed to create DatagramSocket
         } catch (e: IOException) {
@@ -91,7 +90,7 @@ fun startUdpServer(
         } finally {
             udpSocket?.close()
             myLog(msg = "[UDP-Server] Datagram socket closed")
-            withContext(Dispatchers.Main) { printOnUi("[UDP-Server]", "Server stopped.") }
+            withContext(Dispatchers.Main) { printOnUi("[UDP-Server] ", "Server stopped.") }
         }
     }
 }

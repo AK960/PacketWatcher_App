@@ -34,16 +34,16 @@ suspend fun startUdpClient(
                 if (refTime == null) {
                     refTime = sendTime
                     myLog(msg = "[UDP-Client] First packet in stream: No IAT calculated.")
-                    withContext(Dispatchers.Main) { printOnUi("[TCP-Client][P#$i] ", "First packet: No IAT calculated.") }
-                    val packetMessage = "[Client][P#$i] $udpMessage"
+                    withContext(Dispatchers.Main) { printOnUi("[UDP-Client][P#$i] ", "First packet: No IAT calculated.") }
+                    val packetMessage = "[P#$i] $udpMessage"
                     val udpPacket = DatagramPacket(packetMessage.toByteArray(), packetMessage.length, destAddress, portNumber)
                     socket.send(udpPacket)
                 } else {
                     val iat = sendTime - refTime
                     refTime = sendTime
                     myLog(msg = "[UDP-Client] IAT: $iat ms")
-                    withContext(Dispatchers.Main) { printOnUi("[TCP-Client][P#$i] ", "Inter-Arrival-Time (IAT): $iat ms") }
-                    val packetMessage = "[UDP-Client][P#$i] $udpMessage"
+                    withContext(Dispatchers.Main) { printOnUi("[UDP-Client][P#$i] ", "Inter-Arrival-Time (IAT): $iat ms") }
+                    val packetMessage = "[P#$i] $udpMessage"
                     val udpPacket = DatagramPacket(packetMessage.toByteArray(), packetMessage.length, destAddress, portNumber)
                     socket.send(udpPacket)
                 }
@@ -59,15 +59,16 @@ suspend fun startUdpClient(
                 val udpResponse = String(responsePacket.data, 0, responsePacket.length)
 
                 withContext(Dispatchers.Main) {
-                    printOnUi("[UDP-Server] ", udpResponse)
+                    printOnUi("[UDP-Server]", udpResponse)
                 }
             } catch (e: SocketTimeoutException) {
                 myLog(type = "error", msg = "[UDP-Client] Error receiving response: ${e.message}")
-                withContext(Dispatchers.Main) { printOnUi("[Client] ", "No response from server within 5 seconds. Closing socket.") }
+                withContext(Dispatchers.Main) { printOnUi("[UDP-Client][Error] ", "No response from server within 5 seconds. Closing socket.") }
                 e.printStackTrace()
             } finally {
                 // Close socket
                 socket.close()
+                withContext(Dispatchers.Main) { printOnUi("[UDP-Client] ", "All packets sent. Socket closed.") }
             }
 
         } catch (e: Exception) {
