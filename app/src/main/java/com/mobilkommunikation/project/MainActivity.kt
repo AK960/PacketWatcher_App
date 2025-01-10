@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mobilkommunikation.project.ui.screens.PacketWatcherClientView
+import com.mobilkommunikation.project.ui.screens.PacketWatcherNetworkView
 import com.mobilkommunikation.project.ui.screens.PacketWatcherServerView
 import com.mobilkommunikation.project.utils.myLog
 
@@ -69,9 +70,15 @@ fun PacketWatcherAppScaffold () {
             selectedIcon = painterResource(id = R.drawable.icon_server),
             unselectedIcon = painterResource(id = R.drawable.icon_server),
         ),
+        BottomNavigationItem(
+            title = "Network",
+            selectedIcon = painterResource(id = R.drawable.icon_network),
+            unselectedIcon = painterResource(id = R.drawable.icon_network),
+        ),
     )
-    var clientServerStateIndex by rememberSaveable { mutableIntStateOf(0) }
+    var clientServerStateIndex by rememberSaveable { mutableIntStateOf(2) }
     var selectedProtocolStateIndex by rememberSaveable { mutableStateOf("TCP") }
+    var selectedNetworkInfoIndex by rememberSaveable { mutableStateOf("Connectivity Information") }
 
     myLog(msg = "PacketWatcherAppScaffold: Rendering Scaffold with Values ClientServerStateIndex: $clientServerStateIndex, SelectedProtocolStateIndex: $selectedProtocolStateIndex")
 
@@ -159,9 +166,15 @@ fun PacketWatcherAppScaffold () {
                         selectedProtocolStateIndex,
                         onProtocolSelected = { selectedProtocolStateIndex = it }
                     )
-                } else {
+                } else if (clientServerStateIndex == 1) {
                     myLog(msg = "PacketWatcherAppScaffold: Switching Tabs: Server ($clientServerStateIndex) selected")
                     PacketWatcherServerView()
+                } else {
+                    myLog(msg = "PacketWatcherAppScaffold: Switching Tabs: Network ($clientServerStateIndex) selected")
+                    PacketWatcherNetworkView(
+                        selectedNetworkInfoIndex,
+                        onNetworkInfoSelected = { selectedNetworkInfoIndex = it }
+                    )
                 }
             }
         }

@@ -55,7 +55,7 @@ fun ClientInputFields(
                 onNPacketsChange(it)
                 myLog(type = "debug", msg = "Input Fields: Number of packets changed to $it")
             },
-            label = { Text("P#") },
+            label = { Text("Pckts") },
             keyboardOptions = KeyboardOptions.Default,
             modifier = Modifier
                 .weight(0.25f)
