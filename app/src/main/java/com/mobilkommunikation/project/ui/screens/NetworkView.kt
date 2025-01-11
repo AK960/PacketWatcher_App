@@ -4,15 +4,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,6 +27,7 @@ fun PacketWatcherNetworkView (
     onNetworkInfoSelected: (String) -> Unit
 ) {
     myLog(msg = "PacketWatcherNetworkView: Rendering Network View")
+    val dataItems = remember { mutableListOf<String>() }
 
     LazyColumn (
         modifier = Modifier,
@@ -42,11 +46,23 @@ fun PacketWatcherNetworkView (
                 NetworkInfoSegments(
                     options = listOf("Connectivity Information", "Wifi Network", "Mobile Network"),
                     selectedOption = selectedNetworkInfoIndex,
-                    onOptionSelected = {
-                        onNetworkInfoSelected(it)
+                    onOptionSelected = { selectedOption ->
+                        onNetworkInfoSelected(selectedOption)
+                        // Fetch data and add to list
+                        val networkInfoData = fetchData(selectedOption)
+                        dataItems.add(networkInfoData)
                     }
                 )
             }
+        }
+        items(dataItems) { item ->
+            Text(
+                text = item,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
@@ -82,3 +98,6 @@ fun NetworkInfoSegments(
     }
 }
 
+fun fetchData(option: String): String {
+    return "Fetched Data for $option"
+}
