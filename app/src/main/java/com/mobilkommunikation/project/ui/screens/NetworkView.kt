@@ -1,5 +1,7 @@
 package com.mobilkommunikation.project.ui.screens
 
+import android.content.Context
+import android.net.ConnectivityManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.mobilkommunikation.project.utils.myLog
 
@@ -28,6 +31,7 @@ fun PacketWatcherNetworkView (
 ) {
     myLog(msg = "PacketWatcherNetworkView: Rendering Network View")
     val dataItems = remember { mutableListOf<String>() }
+    val context = LocalContext.current
 
     LazyColumn (
         modifier = Modifier,
@@ -49,7 +53,8 @@ fun PacketWatcherNetworkView (
                     onOptionSelected = { selectedOption ->
                         onNetworkInfoSelected(selectedOption)
                         // Fetch data and add to list
-                        val networkInfoData = fetchData(selectedOption)
+                        val networkInfoData = fetchData(context, selectedOption)
+                        dataItems.clear()
                         dataItems.add(networkInfoData)
                     }
                 )
@@ -98,6 +103,24 @@ fun NetworkInfoSegments(
     }
 }
 
-fun fetchData(option: String): String {
-    return "Fetched Data for $option"
+fun fetchData(context: Context, option: String): String {
+    return when (option) {
+        "Connectivity Information" -> getConnectivityInfo(context)
+        //"WiFi Network" -> getWifiInfo(context)
+        //"Mobile Network" -> getMobileNetworkInfo(context)
+        else -> "Invalid Option"
+    }
+}
+
+fun getConnectivityInfo(context: Context): String {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val activeNetwork = connectivityManager.activeNetworkInfo
+    val allNetworks = connectivityManager.allNetworks
+
+    val activeNetworkType = activeNetwork?.typeName ?: "No active network"
+    val allNetworkTypes = allNetworks.joinToString(", ") { network ->
+        connectivityManager.getNetworkInfo(network)?.typeName ?: "Unknown"
+    }
+
+    return "Active Network Type: $activeNetworkType\nAll Network Types: $allNetworkTypes"
 }
