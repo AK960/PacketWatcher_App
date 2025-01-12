@@ -188,3 +188,13 @@ suspend fun sendUDPMessage(
         result
     }
 }
+
+/*
+                    is CellInfoCdma -> { // CellIdentity to represent a unique CDMA cell
+                        val cellIdentity = cellInfo.cellIdentity
+                        val cid = cellIdentity.cid
+                        val lac = cellIdentity.lac
+                        val mcc = cellIdentity.mcc
+                        val mnc = cellIdentity.mnc
+                        cellInfoList.add("CDMA Cell - CID: $cid, LAC: $lac, MCC: $mcc, MNC: $mnc")
+                    }*/
