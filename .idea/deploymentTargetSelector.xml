@@ -18,11 +18,6 @@
                 <DeviceId pluginId="PhysicalDevice" identifier="serial=2a9ab8c4640b7ece" />
               </handle>
             </Target>
-            <Target type="DEFAULT_BOOT">
-              <handle>
-                <DeviceId pluginId="LocalEmulator" identifier="path=/home/alex/.android/avd/Medium_Phone_API_35.avd" />
-              </handle>
-            </Target>
           </targets>
         </DialogSelection>
       </SelectionState>

@@ -1,7 +1,7 @@
 package com.mobilkommunikation.project.ui.screens
 
-import android.content.Context
-import android.net.ConnectivityManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,55 +17,95 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.mobilkommunikation.project.utils.fetchConnectivityInfo
+import com.mobilkommunikation.project.utils.fetchMobileNetworkInfo
+import com.mobilkommunikation.project.utils.fetchWifiInfo
 import com.mobilkommunikation.project.utils.myLog
 
+@RequiresApi(Build.VERSION_CODES.P)
 @Composable
 fun PacketWatcherNetworkView (
-    selectedNetworkInfoIndex: String,
+    selectedNetworkInfoIndex: String = "Connectivity Information",
     onNetworkInfoSelected: (String) -> Unit
 ) {
     myLog(msg = "PacketWatcherNetworkView: Rendering Network View")
-    val dataItems = remember { mutableListOf<String>() }
+
+    // Initialize data list and context
+    val dataItems = remember { mutableStateListOf<String>() }
     val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        val (activeNetwork, allNetworks) = fetchConnectivityInfo(context)
+        dataItems.clear()
+        dataItems.add("[Active Network]")
+        dataItems.add(activeNetwork)
+        dataItems.add("\n[All Networks]")
+        dataItems.addAll(allNetworks.map { it })
+    }
+
+    Column (
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .padding(16.dp)
+    ) {
+        NetworkInfoSegments(
+            options = listOf("Connectivity Information", "Wifi Network", "Mobile Network"),
+            selectedOption = selectedNetworkInfoIndex,
+            onOptionSelected = { selectedOption ->
+                onNetworkInfoSelected(selectedOption)
+                // Fetch data and add to list
+                dataItems.clear()
+                when(selectedOption) {
+                    "Connectivity Information" -> {
+                        myLog(msg = "Fetching connectivity information")
+                        val (activeNetwork, allNetworks) = fetchConnectivityInfo(context)
+                        dataItems.add("[Active Network]")
+                        dataItems.add(activeNetwork)
+                        dataItems.add("\n[All Networks]")
+                        dataItems.addAll(allNetworks.map { it })
+                    }
+                    "Wifi Network" -> {
+                        myLog(msg = "Fetching WiFi information")
+                        val wifiData = fetchWifiInfo(context)
+                        dataItems.addAll(wifiData)
+                    }
+                    "Mobile Network" -> {
+                        myLog(msg = "Fetching mobile network information")
+                        val mobileData = fetchMobileNetworkInfo(context)
+                        dataItems.addAll(mobileData)
+                    }
+                }
+            }
+        )
+    }
 
     LazyColumn (
         modifier = Modifier,
         state = LazyListState(),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(
+            start = 32.dp,
+            top = 8.dp,
+            end = 32.dp,
+            bottom = 8.dp
+        ),
         reverseLayout = false,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        item {
-            Column (
-                modifier = Modifier
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-            ) {
-                NetworkInfoSegments(
-                    options = listOf("Connectivity Information", "Wifi Network", "Mobile Network"),
-                    selectedOption = selectedNetworkInfoIndex,
-                    onOptionSelected = { selectedOption ->
-                        onNetworkInfoSelected(selectedOption)
-                        // Fetch data and add to list
-                        val networkInfoData = fetchData(context, selectedOption)
-                        dataItems.clear()
-                        dataItems.add(networkInfoData)
-                    }
-                )
-            }
-        }
         items(dataItems) { item ->
             Text(
                 text = item,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp),
+                    .padding(vertical = 0.dp),
                 style = MaterialTheme.typography.bodySmall
             )
         }
@@ -101,26 +141,4 @@ fun NetworkInfoSegments(
             }
         }
     }
-}
-
-fun fetchData(context: Context, option: String): String {
-    return when (option) {
-        "Connectivity Information" -> getConnectivityInfo(context)
-        //"WiFi Network" -> getWifiInfo(context)
-        //"Mobile Network" -> getMobileNetworkInfo(context)
-        else -> "Invalid Option"
-    }
-}
-
-fun getConnectivityInfo(context: Context): String {
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    val activeNetwork = connectivityManager.activeNetworkInfo
-    val allNetworks = connectivityManager.allNetworks
-
-    val activeNetworkType = activeNetwork?.typeName ?: "No active network"
-    val allNetworkTypes = allNetworks.joinToString(", ") { network ->
-        connectivityManager.getNetworkInfo(network)?.typeName ?: "Unknown"
-    }
-
-    return "Active Network Type: $activeNetworkType\nAll Network Types: $allNetworkTypes"
 }
