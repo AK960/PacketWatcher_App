@@ -137,13 +137,14 @@ fun fetchMobileNetworkInfo(
 
         mobileNetworkInfoList.add("\n[GeoLocation]")
         if (cid != null && lac != null && mcc != null && mnc != null) {
+            myLog(msg="Fetching Geolocation with values CellID: $cid, LAC: $lac, MCC: $mcc, MNC: $mnc")
             val geoLocation = getCellGeolocation(cid, lac, mcc, mnc)
             if (geoLocation != null) {
                 geoLocation.forEach { key, value ->
                     mobileNetworkInfoList.add("$key: $value\n")
                 }
             } else {
-                mobileNetworkInfoList.add("Geolocation: Not Available")
+                mobileNetworkInfoList.add("Geolocation: Returned Null")
             }
         } else {
             mobileNetworkInfoList.add("Geolocation: Not Available")
@@ -152,18 +153,6 @@ fun fetchMobileNetworkInfo(
     } else {
         mobileNetworkInfoList.add("Permission Denied: ACCESS_NETWORK_STATE or ACCESS_FINE_LOCATION.")
     }
-            /*
-            val cellLocation = telephonyManager.cellLocation
-            if (cellLocation is GsmCellLocation) {
-                val cellID = cellLocation.cid
-                val lac = cellLocation.lac
-                mobileNetworkInfoList.add("GSM Cell Location:")
-                mobileNetworkInfoList.add("    - Cell ID: $cellID")
-                mobileNetworkInfoList.add("    - Location Area Code: $lac")
-            } else {
-                mobileNetworkInfoList.add("Cell Location: not a GSM cell location.")
-                mobileNetworkInfoList.add("    - $cellLocation")
-            }
-            */
+
     return mobileNetworkInfoList
 }
