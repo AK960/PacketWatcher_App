@@ -6,18 +6,20 @@ import android.os.Build
 import android.telephony.TelephonyManager
 import android.telephony.gsm.GsmCellLocation
 import androidx.annotation.RequiresApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @RequiresApi(Build.VERSION_CODES.P)
-fun fetchMobileNetworkInfo(
+suspend fun fetchMobileNetworkInfo(
     context: Context
-): List<String> {
+): List<String> = withContext(Dispatchers.IO) {
     // Initialize return list
     val mobileNetworkInfoList = mutableListOf<String>()
     // Get permissions for fetching mobile network info
     val canAccessNetworkState = checkPermission(context, Manifest.permission.ACCESS_NETWORK_STATE)
     val canAccessFineLocation = checkPermission(context, Manifest.permission.ACCESS_FINE_LOCATION)
 
-    if(canAccessNetworkState || canAccessFineLocation){
+    if (canAccessNetworkState || canAccessFineLocation) {
         // Initialize telephony manager
         val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         var cid: Int? = null
@@ -28,25 +30,23 @@ fun fetchMobileNetworkInfo(
         // Operator Infos
         mobileNetworkInfoList.add("\n[Operator Info]")
         val networkOperatorName = telephonyManager.networkOperatorName
-        if (networkOperatorName.isEmpty()) {
-            mobileNetworkInfoList.add("Network Operator Name: Not Available")
-        } else {
-            mobileNetworkInfoList.add("Network Operator Name: $networkOperatorName")
-        }
+        mobileNetworkInfoList.add(
+            if (networkOperatorName.isEmpty()) "Network Operator Name: Not Available"
+            else "Network Operator Name: $networkOperatorName"
+        )
 
         val simOperatorName = telephonyManager.simOperatorName
-        if (simOperatorName.isEmpty()) {
-            mobileNetworkInfoList.add("SIM Operator Name: Not Available")
-        } else {
-            mobileNetworkInfoList.add("SIM Operator Name: $simOperatorName")
-        }
+        mobileNetworkInfoList.add(
+            if (simOperatorName.isEmpty()) "SIM Operator Name: Not Available"
+            else "SIM Operator Name: $simOperatorName"
+        )
 
         val mccMnc = telephonyManager.networkOperator
         if (mccMnc.length >= 5) {
             mcc = mccMnc.substring(0, 3).toInt()
             mnc = mccMnc.substring(3).toInt()
-            mobileNetworkInfoList.add("MCC: $mcc") // default mcc Germany: 262
-            mobileNetworkInfoList.add("MNC: $mnc") // default mnc blau.de: 03 -> part of O2
+            mobileNetworkInfoList.add("MCC: $mcc") // default MCC Germany: 262
+            mobileNetworkInfoList.add("MNC: $mnc") // default MNC blau.de: 03 -> part of O2
         } else if (mccMnc.isEmpty()) {
             mobileNetworkInfoList.add("MCC/MNC: Not Available.")
         } else {
@@ -89,7 +89,6 @@ fun fetchMobileNetworkInfo(
 
         // Cell Info and Geolocation
         mobileNetworkInfoList.add("\n[Cell Info]")
-
         val cellLocation = telephonyManager.cellLocation
         if (cellLocation is GsmCellLocation) {
             cid = cellLocation.cid
@@ -102,43 +101,16 @@ fun fetchMobileNetworkInfo(
             mobileNetworkInfoList.add("    - $cellLocation")
         }
 
-        /*val allCellInfo = telephonyManager.allCellInfo
-        if (allCellInfo.isNullOrEmpty()) {
-            mobileNetworkInfoList.add("Cell Info: Not Available")
-        } else {
-            for (cellInfo in allCellInfo) {
-                when (cellInfo) {
-                    is CellInfoGsm -> { // CellIdentity to represent a unique GSM cell
-                        val cellIdentity = cellInfo.cellIdentity
-                        cid = cellIdentity.cid
-                        lac = cellIdentity.lac
-                    }
-                    is CellInfoWcdma -> { // CellIdentity to represent a unique UMTS cell
-                        val cellIdentity = cellInfo.cellIdentity
-                        cid = cellIdentity.cid
-                        lac = cellIdentity.lac
-                    }
-                    is CellInfoLte -> { // CellIdentity to represent a unique LTE cell
-                        val cellIdentity = cellInfo.cellIdentity
-                        cid = cellIdentity.ci
-                        lac = cellIdentity.tac
-                    }
-                    // CellInfoCdma not recognized somehow - see ClipboardDump
-                    else -> {
-                        mobileNetworkInfoList.add("Cell Info: Unknown Cell Info Type")
-                    }
-                }
-            }
-            mobileNetworkInfoList.add("    - Cell ID: $cid")
-            mobileNetworkInfoList.add("    - Location Area Code: $lac")
-            mobileNetworkInfoList.add("    - Mobile Country Code: $mcc")
-            mobileNetworkInfoList.add("    - Mobile Network Code: $mnc")
-        }*/
-
+        // Geolocation
         mobileNetworkInfoList.add("\n[GeoLocation]")
         if (cid != null && lac != null && mcc != null && mnc != null) {
-            myLog(msg="Fetching Geolocation with values CellID: $cid, LAC: $lac, MCC: $mcc, MNC: $mnc")
-            val geoLocation = getCellGeolocation(cid, lac, mcc, mnc)
+            myLog(msg = "Fetching Geolocation with values CellID: $cid, LAC: $lac, MCC: $mcc, MNC: $mnc")
+
+            // Asynchronous call to fetch geolocation
+            val geoLocation = withContext(Dispatchers.IO) {
+                getCellGeolocation(cid, lac, mcc, mnc)
+            }
+
             if (geoLocation != null) {
                 geoLocation.forEach { key, value ->
                     mobileNetworkInfoList.add("$key: $value\n")
@@ -149,10 +121,9 @@ fun fetchMobileNetworkInfo(
         } else {
             mobileNetworkInfoList.add("Geolocation: Not Available")
         }
-
     } else {
         mobileNetworkInfoList.add("Permission Denied: ACCESS_NETWORK_STATE or ACCESS_FINE_LOCATION.")
     }
 
-    return mobileNetworkInfoList
+    return@withContext mobileNetworkInfoList
 }

@@ -198,3 +198,37 @@ suspend fun sendUDPMessage(
                         val mnc = cellIdentity.mnc
                         cellInfoList.add("CDMA Cell - CID: $cid, LAC: $lac, MCC: $mcc, MNC: $mnc")
                     }*/
+
+
+/*val allCellInfo = telephonyManager.allCellInfo
+        if (allCellInfo.isNullOrEmpty()) {
+            mobileNetworkInfoList.add("Cell Info: Not Available")
+        } else {
+            for (cellInfo in allCellInfo) {
+                when (cellInfo) {
+                    is CellInfoGsm -> { // CellIdentity to represent a unique GSM cell
+                        val cellIdentity = cellInfo.cellIdentity
+                        cid = cellIdentity.cid
+                        lac = cellIdentity.lac
+                    }
+                    is CellInfoWcdma -> { // CellIdentity to represent a unique UMTS cell
+                        val cellIdentity = cellInfo.cellIdentity
+                        cid = cellIdentity.cid
+                        lac = cellIdentity.lac
+                    }
+                    is CellInfoLte -> { // CellIdentity to represent a unique LTE cell
+                        val cellIdentity = cellInfo.cellIdentity
+                        cid = cellIdentity.ci
+                        lac = cellIdentity.tac
+                    }
+                    // CellInfoCdma not recognized somehow - see ClipboardDump
+                    else -> {
+                        mobileNetworkInfoList.add("Cell Info: Unknown Cell Info Type")
+                    }
+                }
+            }
+            mobileNetworkInfoList.add("    - Cell ID: $cid")
+            mobileNetworkInfoList.add("    - Location Area Code: $lac")
+            mobileNetworkInfoList.add("    - Mobile Country Code: $mcc")
+            mobileNetworkInfoList.add("    - Mobile Network Code: $mnc")
+        }*/

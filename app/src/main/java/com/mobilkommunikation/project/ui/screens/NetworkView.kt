@@ -28,6 +28,9 @@ import com.mobilkommunikation.project.utils.fetchConnectivityInfo
 import com.mobilkommunikation.project.utils.fetchMobileNetworkInfo
 import com.mobilkommunikation.project.utils.fetchWifiInfo
 import com.mobilkommunikation.project.utils.myLog
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.P)
 @Composable
@@ -79,8 +82,11 @@ fun PacketWatcherNetworkView (
                     }
                     "Mobile Network" -> {
                         myLog(msg = "Fetching mobile network information")
-                        val mobileData = fetchMobileNetworkInfo(context)
-                        dataItems.addAll(mobileData)
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val mobileData = fetchMobileNetworkInfo(context)
+                            // Verarbeiten der erhaltenen mobilen Netzwerkdaten
+                            dataItems.addAll(mobileData)
+                        }
                     }
                 }
             }
