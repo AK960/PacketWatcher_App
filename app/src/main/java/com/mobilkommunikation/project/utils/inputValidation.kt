@@ -1,6 +1,7 @@
 package com.mobilkommunikation.project.utils
 
 import java.net.ServerSocket
+import java.util.Locale
 
 sealed class PortValidationResult {
     data object Valid : PortValidationResult()
@@ -24,7 +25,16 @@ fun isValidPortNumber(portNumber: String): PortValidationResult {
         socket.close()
         PortValidationResult.Valid
     } catch (e: Exception) {
-        PortValidationResult.Valid //here PortValidationResult.Blocked --> .Valid only for adb port forward testing
-            // TODO: How to handle case when port forwarding on port 8080 and server listening on port 8080?
+        PortValidationResult.Valid
     }
+}
+
+fun makeValidIpAddress(ip: Int): String {
+    return String.format(
+        Locale.US, "%d.%d.%d.%d",
+        (ip and 0xff),
+        (ip shr 8 and 0xff),
+        (ip shr 16 and 0xff),
+        (ip shr 24 and 0xff)
+    )
 }

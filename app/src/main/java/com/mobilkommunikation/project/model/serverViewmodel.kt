@@ -67,7 +67,7 @@ class ServerViewModel : ViewModel() {
         tcpServerSocket = null
 
         myLog(msg = "handleStopServerInteraction: TCP Server stopped.")
-        addMessage("[TCP-Server]", "Server stopped.")
+        addMessage("[TCP-Server] ", "Server stopped.")
     }
 
     // Logic to start and stop UDP server

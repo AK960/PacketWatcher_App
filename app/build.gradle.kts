@@ -51,6 +51,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.okhttp)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.core.ktx)
@@ -61,7 +62,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.ui.test.android)
     implementation(libs.androidx.ui.test.android)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.runtime.livedata)
