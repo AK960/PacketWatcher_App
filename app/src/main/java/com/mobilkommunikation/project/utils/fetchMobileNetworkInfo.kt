@@ -104,12 +104,13 @@ suspend fun fetchMobileNetworkInfo(
         // Geolocation
         mobileNetworkInfoList.add("\n[GeoLocation]")
         if (cid != null && lac != null && mcc != null && mnc != null) {
-            myLog(msg = "Fetching Geolocation with values CellID: $cid, LAC: $lac, MCC: $mcc, MNC: $mnc")
+            myLog(tag= "myGET", msg = "Fetching Geolocation with values CellID: $cid, LAC: $lac, MCC: $mcc, MNC: $mnc")
 
             // Asynchronous call to fetch geolocation
             val geoLocation = withContext(Dispatchers.IO) {
                 getCellGeolocation(cid, lac, mcc, mnc)
             }
+            myLog(tag= "myGET", msg="geoLocation: $geoLocation")
 
             if (geoLocation != null) {
                 geoLocation.forEach { key, value ->
@@ -119,7 +120,7 @@ suspend fun fetchMobileNetworkInfo(
                 mobileNetworkInfoList.add("Geolocation: Returned Null")
             }
         } else {
-            mobileNetworkInfoList.add("Geolocation: Not Available")
+            mobileNetworkInfoList.add("Geolocation: Not Available. Parameters: CID: $cid, LAC: $lac, MCC: $mcc, MNC: $mnc")
         }
     } else {
         mobileNetworkInfoList.add("Permission Denied: ACCESS_NETWORK_STATE or ACCESS_FINE_LOCATION.")
