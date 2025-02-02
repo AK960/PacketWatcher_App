@@ -15,7 +15,7 @@ suspend fun getCellGeolocation(
     cellID: Int,
     lac: Int,
     mcc: Int = 262,
-    mnc: Int = 0
+    mnc: Int = 3
 ): Hashtable<String, Any>? = withContext(Dispatchers.IO) {
     myLog(msg = "Fetching Geolocation with values CellID: $cellID, LAC: $lac, MCC: $mcc, MNC: $mnc")
     val client = OkHttpClient()
@@ -32,7 +32,7 @@ suspend fun getCellGeolocation(
     try {
         val response = client.makeAsyncRequest(request)
         if (!response.isSuccessful) {
-            myLog(msg = "Request failed: ${response.code}")
+            myLog(type = "error", msg = "Request failed: ${response.code}")
             return@withContext null
         }
 
