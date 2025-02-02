@@ -97,7 +97,7 @@ suspend fun fetchMobileNetworkInfo(
         mobileNetworkInfoList.add("Network Type: $networkType")
 
         // Cell Info and Geolocation (deprecated)
-        mobileNetworkInfoList.add("\n[Cell Info]")
+        mobileNetworkInfoList.add("\n[Cell Info 1]")
         val cellLocation = telephonyManager.cellLocation
         if (cellLocation is GsmCellLocation) {
             cid = cellLocation.cid
