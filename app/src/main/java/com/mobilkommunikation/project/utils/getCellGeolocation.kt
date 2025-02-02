@@ -17,12 +17,13 @@ suspend fun getCellGeolocation(
     mcc: Int = 262,
     mnc: Int = 3
 ): Hashtable<String, Any>? = withContext(Dispatchers.IO) {
-    myLog(msg = "Fetching Geolocation with values CellID: $cellID, LAC: $lac, MCC: $mcc, MNC: $mnc")
+    myLog(tag= "myGET", msg = "Fetching Geolocation with values CellID: $cellID, LAC: $lac, MCC: $mcc, MNC: $mnc")
     val client = OkHttpClient()
 
     // OpenCellID API-URL und API-Key
     val apiKey = "pk.d8c6cc207c23161e4c8cd2c5524b061e"
     val url = "https://api.opencellid.org/cell/get?key=$apiKey&mcc=$mcc&mnc=$mnc&lac=$lac&cellid=$cellID"
+    myLog(tag= "myGET", msg="URL: $url")
 
     // Request erstellen
     val request = Request.Builder()
@@ -33,11 +34,12 @@ suspend fun getCellGeolocation(
         val response = client.makeAsyncRequest(request)
         if (!response.isSuccessful) {
             myLog(type = "error", msg = "Request failed: ${response.code}")
+            myLog(tag= "myGET", msg = "Request failed: ${response.code}")
             return@withContext null
         }
 
         val responseBody = response.body?.string()
-        myLog(msg = "API Response: $responseBody")
+        myLog(tag= "myGET", msg = "API Response: $responseBody")
 
         // JSON-Antwort verarbeiten
         val jsonResponse = responseBody?.let { JSONObject(it) }
@@ -46,32 +48,37 @@ suspend fun getCellGeolocation(
         jsonResponse?.keys()?.forEach { key ->
             responseHashtable[key] = jsonResponse.get(key)
         }
+        myLog(tag= "myGET", msg="JSON-response: $jsonResponse")
 
         return@withContext responseHashtable
     } catch (e: Exception) {
-        myLog(msg = "Request failed with exception: ${e.message}")
+        myLog(tag= "myGET", msg = "Request failed with exception: ${e.message}")
         return@withContext null
     }
 }
 
 suspend fun OkHttpClient.makeAsyncRequest(request: Request): Response =
     suspendCancellableCoroutine { continuation ->
+        myLog(tag= "myGET", msg="Starting asynchRequest.")
         val call = newCall(request)
         call.enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: java.io.IOException) {
                 if (continuation.isActive) {
+                    myLog(tag= "myGET", msg="onFailure: $e")
                     continuation.resumeWithException(e)
                 }
             }
 
             override fun onResponse(call: okhttp3.Call, response: Response) {
                 if (continuation.isActive) {
+                    myLog(tag= "myGET", msg="onResponse: $response")
                     continuation.resume(response)
                 }
             }
         })
 
         continuation.invokeOnCancellation {
+            myLog(tag= "myGET", msg="invokeOnCancellation")
             call.cancel()
         }
     }
