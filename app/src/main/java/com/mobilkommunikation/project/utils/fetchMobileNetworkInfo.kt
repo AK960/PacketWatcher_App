@@ -31,10 +31,14 @@ suspend fun fetchMobileNetworkInfo(
     if (canAccessNetworkState || canAccessFineLocation) {
         // Initialize telephony manager
         val telephonyManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        var cid: Int? = null
-        var lac: Int? = null
-        var mcc: Int? = null
-        var mnc: Int? = null
+        var cid1: Int? = null
+        var lac1: Int? = null
+        var mcc1: Int? = null
+        var mnc1: Int? = null
+        var cid2: Int? = null
+        var lac2: Int? = null
+        var mcc2: Int? = null
+        var mnc2: Int? = null
 
         // Operator Infos
         mobileNetworkInfoList.add("\n[Operator Info]")
@@ -49,18 +53,6 @@ suspend fun fetchMobileNetworkInfo(
             if (simOperatorName.isEmpty()) "SIM Operator Name: Not Available"
             else "SIM Operator Name: $simOperatorName"
         )
-
-        val mccMnc = telephonyManager.networkOperator
-        if (mccMnc.length >= 5) {
-            mcc = mccMnc.substring(0, 3).toInt()
-            mnc = mccMnc.substring(3).toInt()
-            mobileNetworkInfoList.add("MCC: $mcc") // default MCC Germany: 262
-            mobileNetworkInfoList.add("MNC: $mnc") // default MNC blau.de: 03 -> part of O2
-        } else if (mccMnc.isEmpty()) {
-            mobileNetworkInfoList.add("MCC/MNC: Not Available.")
-        } else {
-            mobileNetworkInfoList.add("MCC/MNC: $mccMnc")
-        }
 
         // Data State and Phone Type
         mobileNetworkInfoList.add("\n[Connection & Network Info]")
@@ -97,21 +89,27 @@ suspend fun fetchMobileNetworkInfo(
         mobileNetworkInfoList.add("Network Type: $networkType")
 
         // Cell Info and Geolocation (deprecated)
-        mobileNetworkInfoList.add("\n[Cell Info 1]")
+        mobileNetworkInfoList.add("\n[Cell Info 1: CellLocation(deprecated)/NetworkOperator]")
         val cellLocation = telephonyManager.cellLocation
-        if (cellLocation is GsmCellLocation) {
-            cid = cellLocation.cid
-            lac = cellLocation.lac
+        val mccMnc = telephonyManager.networkOperator
+        if (cellLocation is GsmCellLocation && mccMnc.length >= 5) {
+            cid1 = cellLocation.cid
+            lac1 = cellLocation.lac
+            mcc1 = mccMnc.substring(0, 3).toInt()
+            mnc1 = mccMnc.substring(3).toInt()
             mobileNetworkInfoList.add("GSM Cell Location:")
-            mobileNetworkInfoList.add("    - Cell ID: $cid")
-            mobileNetworkInfoList.add("    - Location Area Code: $lac")
+            mobileNetworkInfoList.add("    - Cell ID: $cid1")
+            mobileNetworkInfoList.add("    - LAC: $lac1")
+            mobileNetworkInfoList.add("    - MCC: $mcc1") // default MCC Germany: 262
+            mobileNetworkInfoList.add("    - MNC: $mnc1") // default MNC blau.de: 03 -> part of O2
         } else {
-            mobileNetworkInfoList.add("Cell Location: not a GSM cell location.")
+            mobileNetworkInfoList.add("Cell Location: not a GSM cell location or MCC/MNC not available.")
             mobileNetworkInfoList.add("    - $cellLocation")
+            mobileNetworkInfoList.add("    - $mccMnc")
         }
 
         // New method for fetching geolocation (alternative to deprecated getCellLocation)
-        mobileNetworkInfoList.add("\n[Cell Info 2]")
+        mobileNetworkInfoList.add("\n[Cell Info 2: allCellInfo]")
         val cellInfoList: List<CellInfo> = telephonyManager.allCellInfo
         cellInfoList.forEach { cellInfo ->
             when(cellInfo) {
@@ -131,41 +129,41 @@ suspend fun fetchMobileNetworkInfo(
                 }
                 is CellInfoGsm -> {
                     val cellIdentity: CellIdentityGsm = cellInfo.cellIdentity
-                    cid = cellIdentity.cid
-                    lac = cellIdentity.lac
-                    mcc = cellIdentity.mccString?.toInt()
-                    mnc = cellIdentity.mncString?.toInt()
+                    cid2 = cellIdentity.cid
+                    lac2 = cellIdentity.lac
+                    mcc2 = cellIdentity.mccString?.toInt()
+                    mnc2 = cellIdentity.mncString?.toInt()
                     mobileNetworkInfoList.add("GSM Cell Location:")
-                    mobileNetworkInfoList.add("    - Cell ID: $cid")
-                    mobileNetworkInfoList.add("    - Location Area Code: $lac")
-                    mobileNetworkInfoList.add("    - MCC: $mcc") // default MCC Germany: 262
-                    mobileNetworkInfoList.add("    - MNC: $mnc") // default MNC blau.de: 3 -> part of O2
+                    mobileNetworkInfoList.add("    - Cell ID: $cid2")
+                    mobileNetworkInfoList.add("    - Location Area Code: $lac2")
+                    mobileNetworkInfoList.add("    - MCC: $mcc2") // default MCC Germany: 262
+                    mobileNetworkInfoList.add("    - MNC: $mnc2") // default MNC blau.de: 3 -> part of O2
                 }
                 is CellInfoLte -> {
                     val cellIdentity: CellIdentityLte = cellInfo.cellIdentity
-                    cid = cellIdentity.ci
-                    lac = cellIdentity.tac
-                    mcc = cellIdentity.mccString?.toInt()
-                    mnc = cellIdentity.mncString?.toInt()
-                    if (cid != 0 || lac != 0 || mcc != null || mnc != null) {
+                    cid2 = cellIdentity.ci
+                    lac2 = cellIdentity.tac
+                    mcc2 = cellIdentity.mccString?.toInt()
+                    mnc2 = cellIdentity.mncString?.toInt()
+                    if (cid2 != 0 || lac2 != 0 || mcc2 != null || mnc2 != null) {
                         mobileNetworkInfoList.add("LTE Cell Location:")
-                        mobileNetworkInfoList.add("    - Cell ID: $cid")
-                        mobileNetworkInfoList.add("    - LAC: $lac")
-                        mobileNetworkInfoList.add("    - MCC: $mcc")
-                        mobileNetworkInfoList.add("    - MNC: $mnc")
+                        mobileNetworkInfoList.add("    - Cell ID: $cid2")
+                        mobileNetworkInfoList.add("    - LAC: $lac2")
+                        mobileNetworkInfoList.add("    - MCC: $mcc2")
+                        mobileNetworkInfoList.add("    - MNC: $mnc2")
                     }
                 }
                 is CellInfoWcdma -> {
                     val cellIdentity: CellIdentityWcdma = cellInfo.cellIdentity
-                    cid = cellIdentity.cid
-                    lac = cellIdentity.lac
-                    mcc = cellIdentity.mccString?.toInt()
-                    mnc = cellIdentity.mncString?.toInt()
+                    cid2 = cellIdentity.cid
+                    lac2 = cellIdentity.lac
+                    mcc2 = cellIdentity.mccString?.toInt()
+                    mnc2 = cellIdentity.mncString?.toInt()
                     mobileNetworkInfoList.add("WCDMA Cell Location:")
-                    mobileNetworkInfoList.add("    - Cell ID: $cid")
-                    mobileNetworkInfoList.add("    - LAC: $lac")
-                    mobileNetworkInfoList.add("    - MCC: $mcc")
-                    mobileNetworkInfoList.add("    - MNC: $mnc")
+                    mobileNetworkInfoList.add("    - Cell ID: $cid2")
+                    mobileNetworkInfoList.add("    - LAC: $lac2")
+                    mobileNetworkInfoList.add("    - MCC: $mcc2")
+                    mobileNetworkInfoList.add("    - MNC: $mnc2")
                 }
                 else -> {
                     mobileNetworkInfoList.add("Cell Location: not a CDMA, GSM, LTE or WCDMA cell location.")
@@ -175,13 +173,13 @@ suspend fun fetchMobileNetworkInfo(
         }
 
         // Geolocation
-        mobileNetworkInfoList.add("\n[GeoLocation]")
-        if (cid != null && lac != null && mcc != null && mnc != null) {
-            myLog(tag= "myGET", msg = "Fetching Geolocation with values CellID: $cid, LAC: $lac, MCC: $mcc, MNC: $mnc")
+        mobileNetworkInfoList.add("\n[GeoLocation 1]")
+        if (cid1 != null && lac1 != null && mcc1 != null && mnc1 != null) {
+            myLog(tag= "myGET", msg = "Fetching Geolocation with values CellID: $cid1, LAC: $lac1, MCC: $mcc1, MNC: $mnc1")
 
             // Asynchronous call to fetch geolocation
             val geoLocation = withContext(Dispatchers.IO) {
-                getCellGeolocation(cid!!, lac!!, mcc!!, mnc!!)
+                getCellGeolocation(cid1, lac1, mcc1, mnc1)
             }
             myLog(tag= "myGET", msg="geoLocation: $geoLocation")
 
@@ -193,8 +191,30 @@ suspend fun fetchMobileNetworkInfo(
                 mobileNetworkInfoList.add("Geolocation: Returned Null")
             }
         } else {
-            mobileNetworkInfoList.add("Geolocation: Not Available. Parameters: CID: $cid, LAC: $lac, MCC: $mcc, MNC: $mnc")
+            mobileNetworkInfoList.add("Geolocation: Not Available. Parameters: CID: $cid1, LAC: $lac1, MCC: $mcc1, MNC: $mnc1")
         }
+
+        mobileNetworkInfoList.add("\n[GeoLocation 2]")
+        if (cid2 != null && lac2 != null && mcc2 != null && mnc2 != null) {
+            myLog(tag= "myGET", msg = "Fetching Geolocation with values CellID: $cid1, LAC: $lac1, MCC: $mcc1, MNC: $mnc1")
+
+            // Asynchronous call to fetch geolocation
+            val geoLocation = withContext(Dispatchers.IO) {
+                getCellGeolocation(cid2!!, lac2!!, mcc2!!, mnc2!!)
+            }
+            myLog(tag= "myGET", msg="geoLocation: $geoLocation")
+
+            if (geoLocation != null) {
+                geoLocation.forEach { key, value ->
+                    mobileNetworkInfoList.add("$key: $value\n")
+                }
+            } else {
+                mobileNetworkInfoList.add("Geolocation: Returned Null")
+            }
+        } else {
+            mobileNetworkInfoList.add("Geolocation: Not Available. Parameters: CID: $cid1, LAC: $lac1, MCC: $mcc1, MNC: $mnc1")
+        }
+
     } else {
         mobileNetworkInfoList.add("Permission Denied: ACCESS_NETWORK_STATE or ACCESS_FINE_LOCATION.")
     }

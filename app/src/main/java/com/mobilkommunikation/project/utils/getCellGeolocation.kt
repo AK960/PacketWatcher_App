@@ -22,19 +22,19 @@ suspend fun getCellGeolocation(
 
     // OpenCellID API-URL und API-Key
     val apiKey = "pk.d8c6cc207c23161e4c8cd2c5524b061e"
-    val url = "https://api.opencellid.org/cell/get?key=$apiKey&mcc=$mcc&mnc=$mnc&lac=$lac&cellid=$cellID"
+    val url = "https://api.opencellid.org/cell/get?key=$apiKey&mcc=$mcc&mnc=$mnc&lac=$lac&cellid=$cellID&format=json"
     myLog(tag= "myGET", msg="URL: $url")
 
     // Request erstellen
     val request = Request.Builder()
         .url(url)
         .build()
+    myLog(tag = "myGET", msg = "Request built: $request")
 
     try {
         val response = client.makeAsyncRequest(request)
         if (!response.isSuccessful) {
-            myLog(type = "error", msg = "Request failed: ${response.code}")
-            myLog(tag= "myGET", msg = "Request failed: ${response.code}")
+            myLog(type = "error", tag = "myGET", msg = "Request failed: ${response.code}")
             return@withContext null
         }
 
@@ -64,7 +64,7 @@ suspend fun OkHttpClient.makeAsyncRequest(request: Request): Response =
         call.enqueue(object : okhttp3.Callback {
             override fun onFailure(call: okhttp3.Call, e: java.io.IOException) {
                 if (continuation.isActive) {
-                    myLog(tag= "myGET", msg="onFailure: $e")
+                    myLog(type = "error", tag= "myGET", msg="onFailure: $e")
                     continuation.resumeWithException(e)
                 }
             }
