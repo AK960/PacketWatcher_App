@@ -1,4 +1,4 @@
-package com.mobilkommunikation.project.model
+package com.mobilkommunikation.project.retrofit
 
 class OpenCellId {
     val cellLocation: String = ""

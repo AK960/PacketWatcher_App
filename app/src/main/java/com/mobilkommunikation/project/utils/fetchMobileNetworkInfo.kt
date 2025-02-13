@@ -120,12 +120,14 @@ suspend fun fetchMobileNetworkInfo(
                     val long = cellIdentity.longitude
                     val nId = cellIdentity.networkId
                     val sysId = cellIdentity.systemId
-                    mobileNetworkInfoList.add("CDMA Cell Location:")
-                    mobileNetworkInfoList.add("    - Base Station ID: $baseStation")
-                    mobileNetworkInfoList.add("    - Latitude: $lat")
-                    mobileNetworkInfoList.add("    - Longitude: $long")
-                    mobileNetworkInfoList.add("    - Network ID: $nId")
-                    mobileNetworkInfoList.add("    - System ID: $sysId")
+                    if (baseStation != 0 || lat.toDouble() != 0.0 || long.toDouble() != 0.0 || nId != 0 || sysId != 0) {
+                        mobileNetworkInfoList.add("CDMA Cell Location:")
+                        mobileNetworkInfoList.add("    - Base Station ID: $baseStation")
+                        mobileNetworkInfoList.add("    - Latitude: $lat")
+                        mobileNetworkInfoList.add("    - Longitude: $long")
+                        mobileNetworkInfoList.add("    - Network ID: $nId")
+                        mobileNetworkInfoList.add("    - System ID: $sysId")
+                    }
                 }
                 is CellInfoGsm -> {
                     val cellIdentity: CellIdentityGsm = cellInfo.cellIdentity
@@ -133,11 +135,13 @@ suspend fun fetchMobileNetworkInfo(
                     lac2 = cellIdentity.lac
                     mcc2 = cellIdentity.mccString?.toInt()
                     mnc2 = cellIdentity.mncString?.toInt()
-                    mobileNetworkInfoList.add("GSM Cell Location:")
-                    mobileNetworkInfoList.add("    - Cell ID: $cid2")
-                    mobileNetworkInfoList.add("    - Location Area Code: $lac2")
-                    mobileNetworkInfoList.add("    - MCC: $mcc2") // default MCC Germany: 262
-                    mobileNetworkInfoList.add("    - MNC: $mnc2") // default MNC blau.de: 3 -> part of O2
+                    if (cid2 != 0 || lac2 != 0 || mcc2 != null || mnc2 != null) {
+                        mobileNetworkInfoList.add("GSM Cell Location:")
+                        mobileNetworkInfoList.add("    - Cell ID: $cid2")
+                        mobileNetworkInfoList.add("    - Location Area Code: $lac2")
+                        mobileNetworkInfoList.add("    - MCC: $mcc2") // default MCC Germany: 262
+                        mobileNetworkInfoList.add("    - MNC: $mnc2") // default MNC blau.de: 3 -> part of O2
+                    }
                 }
                 is CellInfoLte -> {
                     val cellIdentity: CellIdentityLte = cellInfo.cellIdentity
@@ -159,11 +163,13 @@ suspend fun fetchMobileNetworkInfo(
                     lac2 = cellIdentity.lac
                     mcc2 = cellIdentity.mccString?.toInt()
                     mnc2 = cellIdentity.mncString?.toInt()
-                    mobileNetworkInfoList.add("WCDMA Cell Location:")
-                    mobileNetworkInfoList.add("    - Cell ID: $cid2")
-                    mobileNetworkInfoList.add("    - LAC: $lac2")
-                    mobileNetworkInfoList.add("    - MCC: $mcc2")
-                    mobileNetworkInfoList.add("    - MNC: $mnc2")
+                    if (cid2 != 0 || lac2 != 0 || mcc2 != null || mnc2 != null) {
+                        mobileNetworkInfoList.add("WCDMA Cell Location:")
+                        mobileNetworkInfoList.add("    - Cell ID: $cid2")
+                        mobileNetworkInfoList.add("    - LAC: $lac2")
+                        mobileNetworkInfoList.add("    - MCC: $mcc2")
+                        mobileNetworkInfoList.add("    - MNC: $mnc2")
+                    }
                 }
                 else -> {
                     mobileNetworkInfoList.add("Cell Location: not a CDMA, GSM, LTE or WCDMA cell location.")

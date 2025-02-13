@@ -21,7 +21,7 @@ suspend fun getCellGeolocation(
     val client = OkHttpClient()
 
     // OpenCellID API-URL und API-Key
-    val apiKey = "pk.d8c6cc207c23161e4c8cd2c5524b061e"
+    val apiKey = "pk.myApiKey"
     val url = "https://api.opencellid.org/cell/get?key=$apiKey&mcc=$mcc&mnc=$mnc&lac=$lac&cellid=$cellID&format=json"
     myLog(tag= "myGET", msg="URL: $url")
 

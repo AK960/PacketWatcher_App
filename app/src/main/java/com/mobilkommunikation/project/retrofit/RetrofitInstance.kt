@@ -1,5 +1,5 @@
-package com.mobilkommunikation.project.utils
-
+package com.mobilkommunikation.project.retrofit
+/*
 import com.mobilkommunikation.project.data.ApiInterface
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -15,3 +15,4 @@ object RetrofitInstance {
         }
     }
 }
+*/

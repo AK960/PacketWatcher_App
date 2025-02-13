@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.Context
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okio.IOException
 import retrofit2.HttpException
